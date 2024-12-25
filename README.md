@@ -30,8 +30,8 @@ struct Grille
 ```
 
 ## ©️ Compilation et Exécution
-Pour compiler et exécuter le programme, utilisez les commandes suivantes :
-(Vous devez posseder un compilateur C et l'utilitaire "make" 😉)
+Pour compiler et exécuter le programme, utilisez les commandes suivantes :  
+(Vous devez posseder un compilateur C et l'utilitaire "make" 😉)  
 - `make all` : Permet de compiler le code
 - `make run` : Permet de lancer le code compilé
 - `make clean` : Supprimer les fichiers compilés (.o et .exe)
@@ -39,7 +39,7 @@ Pour compiler et exécuter le programme, utilisez les commandes suivantes :
 
 ## 👽 Auteurs
 LE DOHER Loïc  
-ZAMBON Ronan
+ZAMBON Ronan  
 POISSONNIER Matteo
 
 ## Licence
