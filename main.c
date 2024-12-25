@@ -5,6 +5,7 @@
 
 //Mes propres fichiers
 #include "grille.c"
+#include "caseVie.c"
 
 
 int main(){
@@ -16,9 +17,12 @@ int main(){
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
     AfficherGrille(grille);
 
-    grille.listePointeursLignes[1][1] = 1;
+    grille.listePointeursLignes[2][1] = 1;
+    grille.listePointeursLignes[2][2] = 1;
 
     AfficherGrille(grille);
+
+    VérifierCaseVivante(&grille);
 
     // Libération de la mémoire
     printf("Libération de la mémoire\n");
