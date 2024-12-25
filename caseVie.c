@@ -10,46 +10,45 @@ void chasseur(Grille* grille, int x, int y, int* nbVoisins);
 void VérifierCaseVivante(Grille* grille){
     for (int i = 0; i < (*grille).tailleX; i++){
         for (int j = 0; j < (*grille).tailleY; j++){
-            if ((*grille).listePointeursLignes[i][j] == 1){
-                //printf("La case X= %d, Y= %d est vivante\n", i, j);
 
-                // Vérification des cases autour
-                int nbVoisins = 0;
-                int x, y = 0;
-                for (int k = i-1; k <= i+1; k++){
-                    for (int l = j-1; l <= j+1; l++){
-                        if (k >= 0 && k < (*grille).tailleX && l >= 0 && l < (*grille).tailleY){
-                            if ((*grille).listePointeursLignes[k][l] == 1){
-                                //printf("*La case X= %d, Y= %d est vivante\n", k, l);
-                                if (k != i || l != j){
-                                    nbVoisins++;
-                                }
+            int nbVoisins = 0;
+            //printf("La case X= %d, Y= %d est vivante\n", i, j);
+
+            // Vérification des cases autour
+            for (int k = i-1; k <= i+1; k++){
+                for (int l = j-1; l <= j+1; l++){
+                    if (k >= 0 && k < (*grille).tailleX && l >= 0 && l < (*grille).tailleY){
+                        if ((*grille).listePointeursLignes[k][l] == 1){
+                            //printf("*La case X= %d, Y= %d est vivante\n", k, l);
+                            if (k != i || l != j){
+                                nbVoisins++;
                             }
                         }
-                        y = l;
                     }
-                    x = k;
                 }
-                //printf("Nombre de voisins : %d\n", nbVoisins);
-                chasseur(grille, x, y, &nbVoisins);
             }
+            //printf("Nombre de voisins : %d\n", nbVoisins);
+            chasseur(grille, i, j, &nbVoisins);
         }
     }
 }
 
 void chasseur(Grille* grille, int x, int y, int* nbVoisins){
-    printf("Le chasseur a rendu sont verdic pour la case X= %d, Y= %d\n", x, y);
-    if (*nbVoisins == 2 || *nbVoisins == 3){
-        printf("- La case X= %d, Y= %d est vivante\n", x, y);
+    //printf("Le chasseur a rendu sont verdic pour la case X= %d, Y= %d, nbVoisins= %d\n", x, y, *nbVoisins);
+    if ((*nbVoisins == 2 || *nbVoisins == 3) && (*grille).listePointeursLignes[x][y] == 1){
+        //printf("- La case X= %d, Y= %d est vivante\n", x, y);
     }
     else if (*nbVoisins >= 4 && *nbVoisins <= 8){
-        printf("- La case X= %d, Y= %d est morte\n", x, y);
+        //printf("- La case X= %d, Y= %d est morte\n", x, y);
+        (*grille).listePointeursLignes[x][y] = 0;
     }
     else if (*nbVoisins == 0 || *nbVoisins == 1){
-        printf("- La case X= %d, Y= %d est morte\n", x, y);
+        //printf("- La case X= %d, Y= %d est morte\n", x, y);
+        (*grille).listePointeursLignes[x][y] = 0;
     }
     else if (*nbVoisins == 3){
-        printf("- La case X= %d, Y= %d est née\n", x, y);
+        //printf("- La case X= %d, Y= %d est née\n", x, y);
+        (*grille).listePointeursLignes[x][y] = 1;
     }
     else{
         printf("Erreur\n");

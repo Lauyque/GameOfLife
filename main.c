@@ -19,10 +19,21 @@ int main(){
 
     grille.listePointeursLignes[2][1] = 1;
     grille.listePointeursLignes[2][2] = 1;
+    grille.listePointeursLignes[3][1] = 1;
+    grille.listePointeursLignes[1][1] = 1;
+    grille.listePointeursLignes[4][1] = 1;
 
     AfficherGrille(grille);
+    int i = 0;
+    while (i < 10)
+    {
+        VérifierCaseVivante(&grille);
+        AfficherGrille(grille);
+        i++;
+    }
+    
 
-    VérifierCaseVivante(&grille);
+
 
     // Libération de la mémoire
     printf("Libération de la mémoire\n");
