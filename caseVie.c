@@ -51,7 +51,9 @@ void chasseur(Grille* grille, int x, int y, int* nbVoisins){
         (*grille).listePointeursLignes[x][y] = 1;
     }
     else{
-        printf("Erreur\n");
+        //printf("Erreur\n");
+        //printf("La case X= %d, Y= %d\n", x, y);
+        // Tousq les autres cas non traités comme les cases vides avec 2 voisins etc...
     }
 }
 
