@@ -4,15 +4,15 @@
 #include <string.h>
 
 //Mes propres librairies
-#include "tailleGrille.h"
+#include "grille.h"
 
 // PROTOTYPE
-TailleGrille choixTailleGrille();
+Grille CreationGrille();
 
 
 int main(){
 
-    TailleGrille grille = choixTailleGrille();
+    Grille grille = CreationGrille();
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
 
     printf("Fin du programme\n");
@@ -20,13 +20,22 @@ int main(){
     exit(0);
 }
 
-// Fonction pour choisir la taille du tableau
-TailleGrille choixTailleGrille(){
+// Fonction pour créer la grille (la taille et la liste des pointeurs vers les futurs lignes de notre grille)
+Grille CreationGrille(){
     // Utilisation de la structure Grille
-    TailleGrille grille;
+    Grille grille;
     printf("Choisissez la taille du tableau : \n - Y : ");
     scanf("%d",&grille.tailleX);
     printf(" - Z : ");
     scanf("%d",&grille.tailleY);
+
+    // Allocution de la mémoire pour la liste de pointeurs
+    grille.listePointeursLignes = (int*)malloc(grille.tailleX * grille.tailleY * sizeof(int));
+    
+    // Vérification de la bonne allocution de la mémoire
+    if (grille.listePointeursLignes == NULL) {
+        fprintf(stderr, "Erreur d'allocation de mémoire\n");
+        exit(EXIT_FAILURE);
+    }
     return grille;
 }
