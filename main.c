@@ -4,15 +4,15 @@
 #include <string.h>
 
 //Mes propres librairies
-#include "grille.h"
+#include "tailleGrille.h"
 
 // PROTOTYPE
-Grille choixTailleGrille();
+TailleGrille choixTailleGrille();
 
 
 int main(){
 
-    Grille grille = choixTailleGrille();
+    TailleGrille grille = choixTailleGrille();
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
 
     printf("Fin du programme\n");
@@ -21,9 +21,9 @@ int main(){
 }
 
 // Fonction pour choisir la taille du tableau
-Grille choixTailleGrille(){
+TailleGrille choixTailleGrille(){
     // Utilisation de la structure Grille
-    Grille grille;
+    TailleGrille grille;
     printf("Choisissez la taille du tableau : \n - Y : ");
     scanf("%d",&grille.tailleX);
     printf(" - Z : ");

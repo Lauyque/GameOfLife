@@ -1,7 +1,7 @@
 // Prototype de la grille qui permet de définir la taille en YxZ
-typedef struct Grille Grille;
+typedef struct TailleGrille TailleGrille;
 
-struct Grille
+struct TailleGrille
 {
     int tailleX;
     int tailleY;
