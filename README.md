@@ -1,4 +1,6 @@
 # GameOfLife
+
+## Traduction en Français 😂
 Jeu de la Vie
 
 ## Description
