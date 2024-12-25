@@ -30,10 +30,10 @@ run: $(TARGET)
 
 # Règle pour nettoyer les fichiers générés
 clean:
-	rm -f $(OBJS) $(TARGET)
+	del /Q $(OBJS) $(TARGET).exe
 
-# Règle pour compiler et exécuter le programme
-build_and_run: all run
+# Règle pour compiler et exécuter le programme en une seule commande + clean
+build_and_run: clean all run
 
 # Indiquer que les cibles 'all' et 'clean' ne sont pas des fichiers
 .PHONY: all run clean

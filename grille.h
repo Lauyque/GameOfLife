@@ -5,5 +5,5 @@ struct Grille
 {
     int tailleX;
     int tailleY;
-    int* listePointeursLignes;
+    int** listePointeursLignes; // "int**"" car c'est le pointeur vers la liste contenant d'autres pointeurs vers les lignes
 };
