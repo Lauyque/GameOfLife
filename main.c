@@ -8,12 +8,15 @@
 
 // PROTOTYPE
 Grille CreationGrille();
+void AfficherGrille(Grille grille);
+void LibererGrille(Grille grille);
 
 
 int main(){
 
     Grille grille = CreationGrille();
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
+    AfficherGrille(grille);
 
     printf("Fin du programme\n");
 
@@ -38,4 +41,19 @@ Grille CreationGrille(){
         exit(EXIT_FAILURE);
     }
     return grille;
+}
+
+//Fonction pour afficher la grille
+void AfficherGrille(Grille grille){
+    for (int i = 0; i < grille.tailleX; i++){
+        for (int j = 0; j < grille.tailleY; j++){
+            printf("%d ", grille.listePointeursLignes[i * grille.tailleY + j]);
+        }
+        printf("\n");
+    }
+}
+
+// Fonction pour libérer la mémoire de la grille
+void LibererGrille(Grille grille){
+    free(grille.listePointeursLignes);
 }
