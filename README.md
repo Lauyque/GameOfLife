@@ -29,12 +29,13 @@ struct Grille
 };
 ```
 
-## ©️ Compilation et Exécutio  n
+## ©️ Compilation et Exécution
 Pour compiler et exécuter le programme, utilisez les commandes suivantes :
-- `all` : Permet de compiler le code
-- `run` : Permet de lancer le code compilé
-- `clean` : Supprimer les fichiers compilés (.o et .exe)
-- `build_and_run` : Cette commande va nettoyer les fichiers générés précédemment, compiler le programme et l'exécuter.
+(Vous devez posseder un compilateur C et l'utilitaire "make" 😉)
+- `make all` : Permet de compiler le code
+- `make run` : Permet de lancer le code compilé
+- `make clean` : Supprimer les fichiers compilés (.o et .exe)
+- `make build_and_run` : Cette commande va nettoyer les fichiers générés précédemment, compiler le programme et l'exécuter.
 
 ## 👽 Auteurs
 LE DOHER Loïc  
