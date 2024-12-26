@@ -127,18 +127,31 @@ int lancementMenu()
     // Boucle principale
     while (runningMenu)
     {
+        // Effacer l'écran
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_RenderClear(ren);
+        // Affichage du bouton quitter
+        // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
+        SDL_Rect quitterRect = afficherTexte(ren, font, "Quitter", (largeurEcran/2), (hauteurEcran-50), white);
+        SDL_RenderDrawRect(ren, &quitterRect);
+
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
             if (e.type == SDL_QUIT)
             {
                 runningMenu = 0;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+            {
+                int mouseX = e.button.x;
+                int mouseY = e.button.y;
+                if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
+                    mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
+                {
+                    runningMenu = 0;
+                }
             }
         }
-
-        // Effacer l'écran
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-        SDL_RenderClear(ren);
 
         // Afficher le titre
         SDL_Rect titleRect = afficherTexte(ren, fontTitle, "Game Of Life", ((largeurEcran/2)-(100)), 10,  white);
