@@ -7,12 +7,12 @@
 #include "grille.h"
 
 // PROTOTYPE
-Grille CreationGrille();
+Grille creationGrille();
 void AfficherGrille(Grille grille);
-void LibererGrille(Grille* grille);
+void libererGrille(Grille* grille);
 
 // Fonction pour créer la grille (la taille et la liste des pointeurs vers les futurs lignes de notre grille)
-Grille CreationGrille(){
+Grille creationGrille(){
     // Utilisation de la structure Grille
     Grille grille;
     printf("Choisissez la taille du tableau : \n- Y : ");
@@ -61,14 +61,20 @@ void AfficherGrille(Grille grille){
     printf("Fin du tableau\n\n");
 }
 
+
 // Fonction pour libérer la mémoire de la grille
-void LibererGrille(Grille* grille) {
-    if (!grille) {
+void libererGrille(Grille* grille) {
+    if (!grille || !grille->listePointeursLignes) {
         return;
     }
     for (int i = 0; i < grille->tailleX; i++) {
-        free((*grille).listePointeursLignes[i]);
+        if (grille->listePointeursLignes[i] != NULL) {
+            free(grille->listePointeursLignes[i]);
+            grille->listePointeursLignes[i] = NULL;
+            printf("Mémoire libérée pour la ligne %d\n", i);
+        }
     }
-    free((*grille).listePointeursLignes);
-    (*grille).listePointeursLignes = NULL;
+    free(grille->listePointeursLignes);
+    grille->listePointeursLignes = NULL;
+    printf("Mémoire libérée pour la liste des pointeurs vers les lignes\n");
 }

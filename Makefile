@@ -1,14 +1,16 @@
 # Compilateur à utiliser
 CC = gcc
 
-# Dossier avec SDL2
-SDL2_DIR = C:\SDL2\SDL2-devel-2.30.10-VC\SDL2-2.30.10
+# Dossier des dépendances
+DEP_DIR = dependancy
+SDL2_DIR = $(DEP_DIR)\SDL2\SDL2-2.30.10
+SDL2_TTF_DIR = $(DEP_DIR)\SDL2_TTF\SDL2_ttf-2.22.0
 
 # Options de compilation
-CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include
+CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include -I$(SDL2_TTF_DIR)\include
 
 # Options de liaison
-LDFLAGS = -L$(SDL2_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2
+LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2
 
 # Nom de l'exécutable
 TARGET = main
@@ -40,6 +42,7 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 # Règle pour copier SDL2.dll dans le répertoire de compilation
 copy_dll:
 	copy $(SDL2_DIR)\lib\x64\SDL2.dll $(BUILD_DIR)
+	copy $(SDL2_TTF_DIR)\lib\x64\SDL2_ttf.dll $(BUILD_DIR)
 
 # Règle pour exécuter le programme
 run: $(BUILD_DIR)/$(TARGET)
