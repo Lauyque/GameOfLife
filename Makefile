@@ -10,7 +10,8 @@ SDL2_TTF_DIR = $(DEP_DIR)\SDL2_TTF\SDL2_ttf-2.22.0
 CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include -I$(SDL2_TTF_DIR)\include
 
 # Options de liaison
-LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2
+LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
+#LDFLAGS = -lmingw32 -lSDL2main -lSDL2
 
 # Nom de l'exécutable
 TARGET = main
@@ -53,7 +54,7 @@ clean:
 	del /Q $(BUILD_DIR)\*.o $(BUILD_DIR)\$(TARGET).exe $(BUILD_DIR)\SDL2.dll
 
 # Règle pour compiler et exécuter le programme
-build_and_run: clean all run
+build_and_run: clean copy_dll all run
 
 # Indiquer que les cibles 'all', 'run', 'clean', 'build_and_run' et 'copy_dll' ne sont pas des fichiers
 .PHONY: all run clean build_and_run copy_dll
