@@ -1,11 +1,14 @@
 # Compilateur à utiliser
 CC = gcc
 
+# Dossier avec SDL2
+SDL2_DIR = C:\SDL2\SDL2-devel-2.30.10-VC\SDL2-2.30.10
+
 # Options de compilation
-CFLAGS = -Wall -Wextra -std=c11 -IC:/SDL2/SDL2-devel-2.30.10-VC/SDL2-2.30.10/include
+CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include
 
 # Options de liaison
-LDFLAGS = -LC:/SDL2/SDL2-devel-2.30.10-VC/SDL2-2.30.10/lib/x64 -lmingw32 -lSDL2main -lSDL2
+LDFLAGS = -L$(SDL2_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2
 
 # Nom de l'exécutable
 TARGET = main
@@ -20,7 +23,7 @@ SRCS = main.c
 OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 
 # Règle par défaut
-all:  $(BUILD_DIR) $(BUILD_DIR)/$(TARGET)
+all: $(BUILD_DIR) $(BUILD_DIR)/$(TARGET) copy_dll
 
 # Créer le dossier de compilation s'il n'existe pas
 $(BUILD_DIR):
@@ -34,28 +37,20 @@ $(BUILD_DIR)/$(TARGET): $(OBJS)
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Regle pour executer le programme
+# Règle pour copier SDL2.dll dans le répertoire de compilation
+copy_dll:
+	copy $(SDL2_DIR)\lib\x64\SDL2.dll $(BUILD_DIR)
+
+# Règle pour exécuter le programme
 run: $(BUILD_DIR)/$(TARGET)
-	./$(BUILD_DIR)/$(TARGET).exe
+	.\$(BUILD_DIR)\$(TARGET)
 
 # Règle pour nettoyer les fichiers générés
 clean:
-	del /Q $(BUILD_DIR)\*.o $(BUILD_DIR)\$(TARGET).exe
+	del /Q $(BUILD_DIR)\*.o $(BUILD_DIR)\$(TARGET).exe $(BUILD_DIR)\SDL2.dll
 
-# Règle pour compiler et exécuter le programme en une seule commande + clean
+# Règle pour compiler et exécuter le programme
 build_and_run: clean all run
 
-# Indiquer que les cibles 'all', 'run', 'clean' et 'build_and_run' ne sont pas des fichiers
-.PHONY: all run clean build_and_run
-
-# Exemple d'utilisation de makefile
-# make all
-# make run
-# make clean
-
-
-# Importation de la librairie SDL2
-# Dans CFLAGS -> add -> -IC:/SDL2/SDL2-devel-2.30.10-VC/SDL2-2.30.10/include
-# LDFLAGS = -LC:/SDL2/SDL2-devel-2.30.10-VC/SDL2-2.30.10/lib/x64 -lmingw32 -lSDL2main -lSDL2
-#
-# Le packet SDL2-devel-2.30.10-VC.zip doit être téléchargé sur le site officiel de la SDL2 et placé dans le répertoire C:/
+# Indiquer que les cibles 'all', 'run', 'clean', 'build_and_run' et 'copy_dll' ne sont pas des fichiers
+.PHONY: all run clean build_and_run copy_dll

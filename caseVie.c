@@ -3,6 +3,9 @@
 #include <locale.h>
 #include <string.h>
 
+//Mes propres librairies
+//#include "grille.h"
+
 // PROTOTYPE
 void VérifierCaseVivante(Grille* grille);
 void chasseur(Grille* grille, int x, int y, int* nbVoisins);

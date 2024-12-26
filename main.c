@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <time.h>
 
 //Mes propres fichiers
 #include "grille.c"
 #include "caseVie.c"
+#include "menu.c"
 
 
-int main(){
+int main( int argc, char* args[] ){
     // Définition de utf-8 pour les accents
     setlocale(LC_ALL, "fr_FR.UTF-8");
 
@@ -33,7 +35,7 @@ int main(){
     }
     
 
-
+    lancementMenu();
 
     // Libération de la mémoire
     printf("Libération de la mémoire\n");
