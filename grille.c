@@ -23,11 +23,16 @@ Grille creationGrille(const char *input){
     //scanf("%d",&grille.tailleY);
 
     // lecture de "input" pour la taille de la grille
+    // Variable pour sauvegarde la valeur de input
+    char inputSauv[100];
+    strcpy(inputSauv, input);
     char *token = strtok(input, "x"); // On découpe la chaine de caractère avec un espace
     grille.tailleX = atoi(token); // On convertit le premier élément en int
     token = strtok(NULL, " "); // On passe au prochain élément
     grille.tailleY = atoi(token); // On convertit le deuxième élément en int
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
+    // réassignation de la bonna valeur a la variable input
+    strcpy(input, inputSauv);
 
 
     // Allocution de la mémoire pour la liste de pointeurs
