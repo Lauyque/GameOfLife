@@ -15,6 +15,8 @@ void libererGrille(Grille* grille);
 Grille creationGrille(){
     // Utilisation de la structure Grille
     Grille grille;
+
+    // Demande de la taille de la grille via un terminal
     printf("Choisissez la taille du tableau : \n- Y : ");
     scanf("%d",&grille.tailleX);
     printf("- Z : ");

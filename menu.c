@@ -20,6 +20,8 @@ SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
 SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
 
 int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
+int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
+void handleTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
 // Fonction qui affiche le menu
 int lancementMenu()
@@ -133,6 +135,11 @@ int lancementMenu()
         // Affichage du bouton quitter
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
         SDL_Rect quitterRect = afficherTexte(ren, font, "Quitter", (largeurEcran/2), (hauteurEcran-50), white);
+        quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
+        quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
+        quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
+        quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
         SDL_RenderDrawRect(ren, &quitterRect);
 
         SDL_Event e;
@@ -198,7 +205,11 @@ int lancementMenu()
                       mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                 {
                     printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-                    sleep(1);
+                    if (lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]) != 0)
+                    {
+                        fprintf(stderr, "Erreur lors du lancement du choix de la taille de la grille\n");
+                        runningMenu = 0;
+                    }
                 }
             }
         }
@@ -222,7 +233,16 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 {
     // Dessiner le texte
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, texte, color);
+    if (textSurface == NULL) {
+        printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
+        return (SDL_Rect){0, 0, 0, 0};
+    }
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
+    if (textTexture == NULL) {
+        printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(textSurface);
+        return (SDL_Rect){0, 0, 0, 0};
+    }
 
     SDL_Rect textRect = {posX, posY, textSurface->w, textSurface->h};
     SDL_RenderCopy(ren, textTexture, NULL, &textRect);
@@ -237,7 +257,17 @@ SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const cha
 {
     // Dessiner le nom
     SDL_Surface *nameSurface = TTF_RenderText_Solid(font, nom, color);
+    if (nameSurface == NULL) {
+        printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
+        return (SDL_Rect){0, 0, 0, 0};
+    }
     SDL_Texture *nameTexture = SDL_CreateTextureFromSurface(ren, nameSurface);
+    if (nameTexture == NULL) {
+        printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(nameSurface);
+        return (SDL_Rect){0, 0, 0, 0};
+    }
+
     SDL_Rect nameRect = {rect.x + (rect.w - nameSurface->w) / 2, rect.y + 10, nameSurface->w, nameSurface->h};
     SDL_RenderCopy(ren, nameTexture, NULL, &nameRect);
     SDL_FreeSurface(nameSurface);
@@ -257,6 +287,11 @@ SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect)
         return rect;
     }
     SDL_Texture *imgTexture = SDL_CreateTextureFromSurface(ren, imgSurface);
+    if (imgTexture == NULL) {
+        printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(imgSurface);
+        return rect;
+    }
 
     // Redimensionner l'image si elle est trop grande
     int maxWidth = rect.w - 20;
@@ -334,4 +369,108 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
     }
     
     return 0;
+}
+
+
+// Fonction qui affiche le choix de la taille de la grille
+int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
+    int runningChoixGrille = 1;
+    char inputText[100] = "";
+
+    while (runningChoixGrille == 1) {
+        // Effacer l'écran
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_RenderClear(ren);
+
+        // Afficher le titre
+        SDL_Rect titleRect = afficherTexte(ren, fontTitle, "Choissisez la taille de votre Grille", 10, 20, color);
+
+        // Zone de saisie de texte
+        SDL_Rect saisieRect = {500, 300, 400, 25};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &saisieRect); // Dessiner le rectangle
+        afficherTexte(ren, font, inputText, saisieRect.x + 5, saisieRect.y + 5, color);
+
+        // Afficher les boutons avec 4 choix prédéfinis
+        SDL_Rect bouton1Rect = afficherTexte(ren, font, "10*10", 300, 350, color);
+        SDL_RenderDrawRect(ren, &bouton1Rect);
+        SDL_Rect bouton2Rect = afficherTexte(ren, font, "15*15", 300, 450, color);
+        SDL_RenderDrawRect(ren, &bouton2Rect);
+        SDL_Rect bouton3Rect = afficherTexte(ren, font, "25*25", 400, 350, color);
+        SDL_RenderDrawRect(ren, &bouton3Rect);
+        SDL_Rect bouton4Rect = afficherTexte(ren, font, "50*50", 400, 450, color);
+        SDL_RenderDrawRect(ren, &bouton4Rect);
+
+        // Afficher le bouton "Retour"
+        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", 500, 400, color);
+        SDL_RenderDrawRect(ren, &retourRect);
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                runningChoixGrille = 0;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+                int mouseX = e.button.x;
+                int mouseY = e.button.y;
+                if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w &&
+                    mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h) {
+                    runningChoixGrille = 0;
+                } else if (mouseX >= saisieRect.x && mouseX <= saisieRect.x + saisieRect.w &&
+                           mouseY >= saisieRect.y && mouseY <= saisieRect.y + saisieRect.h) {
+                    handleTextInput(ren, font, color, saisieRect, inputText, sizeof(inputText));
+                }
+            }
+        }
+
+        // Afficher le rendu
+        SDL_RenderPresent(ren);
+    }
+
+    return 0;
+}
+
+void handleTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength) {
+    SDL_StartTextInput();
+    int runningInput = 1;
+    while (runningInput) {
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                runningInput = 0;
+            } else if (e.type == SDL_TEXTINPUT) { // quand on tape un caractère
+                if (strlen(inputText) < maxLength - 1) {
+                    strcat(inputText, e.text.text);
+                }
+            } else if (e.type == SDL_KEYDOWN) { // quand on appuie sur la touche backspace ou entrée
+                if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(inputText) > 0) {
+                    inputText[strlen(inputText) - 1] = '\0';
+                } else if (e.key.keysym.sym == SDLK_RETURN) {
+                    runningInput = 0;
+                }
+            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) { // quand on clique en dehors de la zone de saisie
+                int mouseX = e.button.x;
+                int mouseY = e.button.y;
+                if (mouseX < inputRect.x || mouseX > inputRect.x + inputRect.w ||
+                    mouseY < inputRect.y || mouseY > inputRect.y + inputRect.h) {
+                    runningInput = 0;
+                }
+            }
+        }
+
+        // Effacer toutes la zone d'affichage de l'input
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_RenderFillRect(ren, &inputRect);
+
+        // On redesinne le rectangle
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        // Afficher la zone de saisie
+        SDL_RenderDrawRect(ren, &inputRect);
+        afficherTexte(ren, font, inputText, inputRect.x + 5, inputRect.y + 5, color);
+
+        // Afficher le rendu
+        SDL_RenderPresent(ren);
+    }
+    SDL_StopTextInput();
+    // Ensure the screen is updated after text input is handled
+    SDL_RenderPresent(ren);
 }
