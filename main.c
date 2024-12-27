@@ -5,8 +5,8 @@
 #include <time.h>
 
 //Mes propres fichiers
-#include "grille.c"
-#include "caseVie.c"
+//#include "grille.c"
+//#include "caseVie.c"
 #include "menu.c"
 
 
@@ -15,24 +15,24 @@ int main( int argc, char* args[] ){
     setlocale(LC_ALL, "fr_FR.UTF-8");
 
     // Déclaration de la grille
-    Grille grille = creationGrille();
-    printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
+    //Grille grille = creationGrille();
+    //printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
     //AfficherGrille(grille);
 
-    grille.listePointeursLignes[2][1] = 1;
-    grille.listePointeursLignes[2][2] = 1;
-    grille.listePointeursLignes[3][1] = 1;
-    grille.listePointeursLignes[1][1] = 1;
-    grille.listePointeursLignes[4][1] = 1;
+    //grille.listePointeursLignes[2][1] = 1;
+    //grille.listePointeursLignes[2][2] = 1;
+    //grille.listePointeursLignes[3][1] = 1;
+    //grille.listePointeursLignes[1][1] = 1;
+    //grille.listePointeursLignes[4][1] = 1;
 
     //AfficherGrille(grille);
-    int i = 0;
-    while (i < 10)
-    {
-        VérifierCaseVivante(&grille);
+    //int i = 0;
+    //while (i < 10)
+    //{
+        //VérifierCaseVivante(&grille);
         //AfficherGrille(grille);
-        i++;
-    }
+        //i++;
+    //}
     
     // Lancement du menu avec une verification de la réussite
     if (lancementMenu() != 0){
@@ -42,7 +42,7 @@ int main( int argc, char* args[] ){
 
     // Libération de la mémoire
     printf("Libération de la mémoire\n");
-    libererGrille(&grille);
+    //libererGrille(&grille);
 
     // Fin du programme
     printf("Fin du programme\n");

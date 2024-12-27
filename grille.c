@@ -12,15 +12,23 @@ void AfficherGrille(Grille grille);
 void libererGrille(Grille* grille);
 
 // Fonction pour créer la grille (la taille et la liste des pointeurs vers les futurs lignes de notre grille)
-Grille creationGrille(){
+Grille creationGrille(const char *input){
     // Utilisation de la structure Grille
     Grille grille;
 
     // Demande de la taille de la grille via un terminal
-    printf("Choisissez la taille du tableau : \n- Y : ");
-    scanf("%d",&grille.tailleX);
-    printf("- Z : ");
-    scanf("%d",&grille.tailleY);
+    //printf("Choisissez la taille du tableau : \n- Y : ");
+    //scanf("%d",&grille.tailleX);
+    //printf("- Z : ");
+    //scanf("%d",&grille.tailleY);
+
+    // lecture de "input" pour la taille de la grille
+    char *token = strtok(input, "x"); // On découpe la chaine de caractère avec un espace
+    grille.tailleX = atoi(token); // On convertit le premier élément en int
+    token = strtok(NULL, " "); // On passe au prochain élément
+    grille.tailleY = atoi(token); // On convertit le deuxième élément en int
+    printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
+
 
     // Allocution de la mémoire pour la liste de pointeurs
     grille.listePointeursLignes = (int**)malloc(grille.tailleX * sizeof(int*));

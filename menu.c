@@ -12,6 +12,10 @@
 // #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
 
+// Mes propres fichiers
+#include "grille.c"
+#include "caseVie.c"
+
 // PROTOTYPES
 int lancementMenu();
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
@@ -21,7 +25,7 @@ SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const cha
 
 int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
 int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
-void handleTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
+void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
 // Fonction qui affiche le menu
 int lancementMenu()
@@ -393,17 +397,40 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
 
         // Afficher les boutons avec 4 choix prédéfinis
         SDL_Rect bouton1Rect = afficherTexte(ren, font, "10*10", 300, 350, color);
-        SDL_RenderDrawRect(ren, &bouton1Rect);
         SDL_Rect bouton2Rect = afficherTexte(ren, font, "15*15", 300, 450, color);
-        SDL_RenderDrawRect(ren, &bouton2Rect);
         SDL_Rect bouton3Rect = afficherTexte(ren, font, "25*25", 400, 350, color);
-        SDL_RenderDrawRect(ren, &bouton3Rect);
         SDL_Rect bouton4Rect = afficherTexte(ren, font, "50*50", 400, 450, color);
+        bouton1Rect.w += 20; // Permet d'agrandir la zone de clic en largeur
+        bouton2Rect.w += 20;
+        bouton3Rect.w += 20;
+        bouton4Rect.w += 20;
+
+        bouton1Rect.h += 10; // Permet d'agrandir la zone de clic en hauteur
+        bouton2Rect.h += 10;
+        bouton3Rect.h += 10;
+        bouton4Rect.h += 10;
+
+        bouton1Rect.x -= 10; // Permet de commencer la zone de clic plus à gauche
+        bouton2Rect.x -= 10;
+        bouton3Rect.x -= 10;
+        bouton4Rect.x -= 10;
+
+        bouton1Rect.y -= 5; // Permet de commencer la zone de clic plus en haut
+        bouton2Rect.y -= 5;
+        bouton3Rect.y -= 5;
+        bouton4Rect.y -= 5;
+        SDL_RenderDrawRect(ren, &bouton1Rect);
+        SDL_RenderDrawRect(ren, &bouton2Rect);
+        SDL_RenderDrawRect(ren, &bouton3Rect);
         SDL_RenderDrawRect(ren, &bouton4Rect);
 
         // Afficher le bouton "Retour"
-        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", 500, 400, color);
+        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", 600, 450, color);
         SDL_RenderDrawRect(ren, &retourRect);
+
+        // Afficher le bouton "Retour"
+        SDL_Rect jouerRect = afficherTexte(ren, font, "Jouer", 600, 350, color);
+        SDL_RenderDrawRect(ren, &jouerRect);
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -412,14 +439,20 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
             } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
-                if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w &&
+                if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w && // Quand on clique sur le bouton "Retour"
                     mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h) {
                     runningChoixGrille = 0;
-                } else if (mouseX >= saisieRect.x && mouseX <= saisieRect.x + saisieRect.w &&
+                } else if (mouseX >= saisieRect.x && mouseX <= saisieRect.x + saisieRect.w && // Quand on clique sur la zone de saisie
                            mouseY >= saisieRect.y && mouseY <= saisieRect.y + saisieRect.h) {
-                    handleTextInput(ren, font, color, saisieRect, inputText, sizeof(inputText));
+                    lectureTextInput(ren, font, color, saisieRect, inputText, sizeof(inputText));
+                } else if (mouseX >= jouerRect.x && mouseX <= jouerRect.x + jouerRect.w && // Quand on clique sur le bouton "Jouer"
+                    mouseY >= jouerRect.y && mouseY <= jouerRect.y + jouerRect.h) {
+                        printf("Lancer la grille %s\n", inputText);
+                        Grille grille = creationGrille(inputText);
+                        libererGrille(&grille);
                 }
             }
+
         }
 
         // Afficher le rendu
@@ -429,7 +462,7 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
     return 0;
 }
 
-void handleTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength) {
+void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength) {
     SDL_StartTextInput();
     int runningInput = 1;
     while (runningInput) {
