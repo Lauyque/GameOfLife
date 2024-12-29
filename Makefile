@@ -5,12 +5,13 @@ CC = gcc
 DEP_DIR = dependancy
 SDL2_DIR = $(DEP_DIR)\SDL2\SDL2-2.30.10
 SDL2_TTF_DIR = $(DEP_DIR)\SDL2_TTF\SDL2_ttf-2.22.0
+SDL2_IMAGES_DIR = $(DEP_DIR)\SDL2_IMAGES\SDL2_image-2.8.4
 
 # Options de compilation
-CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include -I$(SDL2_TTF_DIR)\include
+CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include -I$(SDL2_TTF_DIR)\include -I$(SDL2_IMAGES_DIR)\include
 
 # Options de liaison
-LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
+LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -L$(SDL2_IMAGES_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image
 #LDFLAGS = -lmingw32 -lSDL2main -lSDL2
 
 # Nom de l'exécutable
@@ -44,6 +45,7 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 copy_dll:
 	copy $(SDL2_DIR)\lib\x64\SDL2.dll $(BUILD_DIR)
 	copy $(SDL2_TTF_DIR)\lib\x64\SDL2_ttf.dll $(BUILD_DIR)
+	copy $(SDL2_IMAGES_DIR)\lib\x64\SDL2_image.dll $(BUILD_DIR)
 
 # Règle pour exécuter le programme
 run: $(BUILD_DIR)/$(TARGET)

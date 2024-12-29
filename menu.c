@@ -8,6 +8,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 
 // #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
@@ -130,12 +131,34 @@ int lancementMenu()
         runningMenu = 0;
     }
 
+
+    // Afficher une image de fond avec sdl2 image
+    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu.png");
+    if (background == NULL)
+    {
+        printf("IMG_Load Error: %s\n", IMG_GetError());
+        runningMenu = 0;
+    }
+    SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(ren, background); // Créer une texture à partir de l'image
+    if (backgroundTexture == NULL)
+    {
+        printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        SDL_FreeSurface(background);
+        runningMenu = 0;
+    }
+
+
+
     // Boucle principale
     while (runningMenu)
     {
         // Effacer l'écran
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
         SDL_RenderClear(ren);
+
+        // Appliquer la texture de fond
+        SDL_RenderCopy(ren, backgroundTexture, NULL, NULL); // Copier la texture sur le renderer
+
         // Affichage du bouton quitter
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
         SDL_Rect quitterRect = afficherTexte(ren, font, "Quitter", (largeurEcran/2), (hauteurEcran-50), white);
@@ -222,6 +245,9 @@ int lancementMenu()
         SDL_RenderPresent(ren);
     }
 
+    // Libération de la mémoire
+    SDL_DestroyTexture(backgroundTexture);
+    IMG_Quit();
     TTF_CloseFont(font);
     TTF_CloseFont(fontTitle);
     TTF_Quit();
