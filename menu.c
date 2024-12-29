@@ -28,6 +28,13 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
 int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
 void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
+// IDEE d'avancement.
+// -> Faire une liste de tout les pointeurs de toutes nos varaibles et mettre en parametre de nos fonctions
+//    pour pouvoir les modifier directement et avoir accès à toutes les variables.
+// -> Ajouter une librairie de video ou gif pour mettre des animations dans le menu
+// -> Ajouter une librairie pour des sons
+
+
 // Fonction qui affiche le menu
 int lancementMenu()
 {
