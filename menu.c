@@ -3,12 +3,11 @@
 #include <locale.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
-#include <SDL_ttf.h>
-#include <SDL_image.h>
+#include <SDL_ttf.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
+#include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
 // #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
