@@ -7,7 +7,7 @@
 #include "grille.h"
 
 // PROTOTYPE
-Grille creationGrille();
+Grille creationGrille(const char *input);
 void AfficherGrille(Grille grille);
 void libererGrille(Grille* grille);
 
@@ -31,7 +31,7 @@ Grille creationGrille(const char *input){
     token = strtok(NULL, " "); // On passe au prochain élément
     grille.tailleY = atoi(token); // On convertit le deuxième élément en int
     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
-    // réassignation de la bonna valeur a la variable input
+    // réassignation de la bonna valeur à la variable input
     strcpy(input, inputSauv);
 
 
@@ -44,7 +44,7 @@ Grille creationGrille(const char *input){
         exit(EXIT_FAILURE);
     }
 
-    // Remplossage de la grille avec des 0
+    // Remplissage de la grille avec des 0
     for (int i = 0; i < grille.tailleX; i++){
         grille.listePointeursLignes[i] = (int*)malloc(grille.tailleY * sizeof(int));
         if (grille.listePointeursLignes[i] == NULL) {

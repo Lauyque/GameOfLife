@@ -15,16 +15,16 @@
 // Mes propres fichiers
 #include "grille.c"
 #include "caseVie.c"
+#include "jeu.c"
 
 // PROTOTYPES
 int lancementMenu();
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
-SDL_Rect afficherPlusInformation(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, SDL_Color color, char *Text);
 SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
 SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
 
 int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
-int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
+Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
 void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
 // IDEE d'avancement.
@@ -238,11 +238,28 @@ int lancementMenu()
                       mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                 {
                     printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-                    if (lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]) != 0)
+                    Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                    if (grille.tailleX != 0 && grille.tailleY != 0)
                     {
-                        fprintf(stderr, "Erreur lors du lancement du choix de la taille de la grille\n");
-                        runningMenu = 0;
+                        printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
+                        if (grille.tailleX > 3 && grille.tailleY > 3) {
+                            grille.listePointeursLignes[2][1] = 1;
+                            grille.listePointeursLignes[3][2] = 1;
+                            grille.listePointeursLignes[1][3] = 1;
+                            grille.listePointeursLignes[2][3] = 1;
+                            grille.listePointeursLignes[3][3] = 1;
+                        } else {
+                            fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
+                            runningMenu = 0;
+                        }
+                        if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
+                        {
+                            fprintf(stderr, "Erreur lors du lancement du jeu\n");
+                            runningMenu = 0;
+                        }
+                        libererGrille(&grille);
                     }
+                    
                 }
             }
         }
@@ -409,9 +426,10 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
 
 
 // Fonction qui affiche le choix de la taille de la grille
-int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
+Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
     int runningChoixGrille = 1;
     char inputText[100] = "";
+    Grille grille;
 
     while (runningChoixGrille == 1) {
         // Effacer l'écran
@@ -480,7 +498,9 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
                 } else if (mouseX >= jouerRect.x && mouseX <= jouerRect.x + jouerRect.w && // Quand on clique sur le bouton "Jouer"
                     mouseY >= jouerRect.y && mouseY <= jouerRect.y + jouerRect.h) {
                         Grille grille = creationGrille(inputText);
-                        libererGrille(&grille);
+                        runningChoixGrille = 0;
+                        //libererGrille(&grille);
+                        return grille;
                 } else if (mouseX >= bouton1Rect.x && mouseX <= bouton1Rect.x + bouton1Rect.w && // Quand on clique sur le bouton "10*10"
                            mouseY >= bouton1Rect.y && mouseY <= bouton1Rect.y + bouton1Rect.h) {
                     inputText[0] = '1';
@@ -489,7 +509,8 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
                     inputText[3] = '1';
                     inputText[4] = '0';
                     Grille grille = creationGrille(inputText);
-                    libererGrille(&grille);
+                    //libererGrille(&grille);
+                    return grille;
                 } else if (mouseX >= bouton2Rect.x && mouseX <= bouton2Rect.x + bouton2Rect.w && // Quand on clique sur le bouton "15*15"
                            mouseY >= bouton2Rect.y && mouseY <= bouton2Rect.y + bouton2Rect.h) {
                     inputText[0] = '1';
@@ -498,7 +519,8 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
                     inputText[3] = '1';
                     inputText[4] = '5';
                     Grille grille = creationGrille(inputText);
-                    libererGrille(&grille);
+                    //libererGrille(&grille);
+                    return grille;
                 } else if (mouseX >= bouton3Rect.x && mouseX <= bouton3Rect.x + bouton3Rect.w && // Quand on clique sur le bouton "25*25"
                            mouseY >= bouton3Rect.y && mouseY <= bouton3Rect.y + bouton3Rect.h) {
                     inputText[0] = '2';
@@ -507,7 +529,8 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
                     inputText[3] = '2';
                     inputText[4] = '5';
                     Grille grille = creationGrille(inputText);
-                    libererGrille(&grille);
+                    //libererGrille(&grille);
+                    return grille;
                 } else if (mouseX >= bouton4Rect.x && mouseX <= bouton4Rect.x + bouton4Rect.w && // Quand on clique sur le bouton "50*50"
                            mouseY >= bouton4Rect.y && mouseY <= bouton4Rect.y + bouton4Rect.h) {
                     inputText[0] = '5';
@@ -516,7 +539,8 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
                     inputText[3] = '5';
                     inputText[4] = '0';
                     Grille grille = creationGrille(inputText);
-                    libererGrille(&grille);
+                    //libererGrille(&grille);
+                    return grille;
                 }
             }
 
@@ -526,7 +550,7 @@ int lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font,
         SDL_RenderPresent(ren);
     }
 
-    return 0;
+    return grille;
 }
 
 void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength) {
