@@ -223,7 +223,7 @@ int lancementMenu()
                     mouseX >= infoRect.x && mouseX <= infoRect.x + infoRect.w &&
                     mouseY >= infoRect.y && mouseY <= infoRect.y + infoRect.h)
                 {
-                    printf("Afficher plus d'information pour l'option %s\n", nomOptions[row * 3 + col]);
+                    //printf("Afficher plus d'information pour l'option %s\n", nomOptions[row * 3 + col]);
                     if (lancementPlusInformation(ren, fontTitle, font, white, nomOptions[row * 3 + col], descriptionOptions[row * 3 + col]) != 0)
                     {
                         fprintf(stderr, "Erreur lors du lancement de plus d'information\n");
@@ -237,11 +237,11 @@ int lancementMenu()
                      (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
                       mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                 {
-                    printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
+                    //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
                     Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
                     if (grille.tailleX != 0 && grille.tailleY != 0)
                     {
-                        printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
+                        //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
                         if (grille.tailleX > 3 && grille.tailleY > 3) {
                             grille.listePointeursLignes[2][1] = 1;
                             grille.listePointeursLignes[3][2] = 1;
