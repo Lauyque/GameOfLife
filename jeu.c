@@ -20,6 +20,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 // Jeu
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
+    int tour = 1;
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
@@ -49,11 +50,24 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Afficher la grille dans le rectangle
         AfficherGrilleJeu(grille, ren, font, color);
 
+    // rectangle a la toute droite de l'écran pour afficher le nombre de tour
+        SDL_Rect tourRect = {largeurEcran - 100, 20, 80, 30};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
+
+        // transformer un int en char
+        char tourText[100];
+        sprintf(tourText, "Tour : %d", tour); // Utiliser %d pour les entiers
+        afficherTexte(ren, font, tourText, largeurEcran - 90, 25, color);
+        
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
         // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
         if (SDL_GetTicks() % 100 == 0){
             VérifierCaseVivante(grille);
+
+            // Augmenter le nombre de tour
+            tour++;
         }
 
         // Afficher le bouton "Quitter" en bas au centre

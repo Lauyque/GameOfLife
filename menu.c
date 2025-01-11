@@ -430,7 +430,6 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
 Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
     int runningChoixGrille = 1;
     char inputText[100] = "";
-    Grille grille;
 
     while (runningChoixGrille == 1) {
         // Effacer l'écran
@@ -547,6 +546,8 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
         SDL_RenderPresent(ren);
     }
 
+    // Si une erreur survient
+    Grille grille = {0, 0, NULL};
     return grille;
 }
 
