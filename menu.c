@@ -287,7 +287,8 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
     // Dessiner le texte
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, texte, color);
     if (textSurface == NULL) {
-        printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
+        // Normal puisque le texte est vide
+        //printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
         return (SDL_Rect){0, 0, 0, 0};
     }
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(ren, textSurface);

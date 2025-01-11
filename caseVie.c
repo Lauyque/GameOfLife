@@ -8,9 +8,14 @@
 
 // PROTOTYPE
 void VérifierCaseVivante(Grille* grille);
-void chasseur(Grille* grille, int x, int y, int* nbVoisins);
 
 void VérifierCaseVivante(Grille* grille){
+    // Créer une grille temporaire pour stocker les nouvelles valeurs
+    int** nouvelleGrille = (int**)malloc((*grille).tailleX * sizeof(int*));
+    for (int i = 0; i < (*grille).tailleX; i++) {
+        nouvelleGrille[i] = (int*)malloc((*grille).tailleY * sizeof(int));
+    }
+
     for (int i = 0; i < (*grille).tailleX; i++){
         for (int j = 0; j < (*grille).tailleY; j++){
 
@@ -31,36 +36,30 @@ void VérifierCaseVivante(Grille* grille){
                 }
             }
             //printf("Nombre de voisins : %d\n", nbVoisins);
-            chasseur(grille, i, j, &nbVoisins);
+            // Appliquer les règles du jeu de la vie et stocker le résultat dans la grille temporaire
+            if ((nbVoisins == 2 || nbVoisins == 3) && (*grille).listePointeursLignes[i][j] == 1){
+                nouvelleGrille[i][j] = 1;
+            } else if (nbVoisins == 3){
+                nouvelleGrille[i][j] = 1;
+            } else {
+                nouvelleGrille[i][j] = 0;
+            }
         }
     }
+
+    // Copier la grille temporaire dans la grille principale
+    for (int i = 0; i < (*grille).tailleX; i++){
+        for (int j = 0; j < (*grille).tailleY; j++){
+            (*grille).listePointeursLignes[i][j] = nouvelleGrille[i][j];
+        }
+    }
+
+    // Libérer la mémoire de la grille temporaire
+    for (int i = 0; i < (*grille).tailleX; i++) {
+        free(nouvelleGrille[i]);
+    }
+    free(nouvelleGrille);
 }
-
-void chasseur(Grille* grille, int x, int y, int* nbVoisins){
-    //printf("Le chasseur a rendu sont verdic pour la case X= %d, Y= %d, nbVoisins= %d\n", x, y, *nbVoisins);
-    if ((*nbVoisins == 2 || *nbVoisins == 3) && (*grille).listePointeursLignes[x][y] == 1){
-        //printf("- La case X= %d, Y= %d est vivante\n", x, y);
-    }
-    else if (*nbVoisins >= 4 && *nbVoisins <= 8){
-        //printf("- La case X= %d, Y= %d est morte\n", x, y);
-        (*grille).listePointeursLignes[x][y] = 0;
-    }
-    else if (*nbVoisins == 0 || *nbVoisins == 1){
-        //printf("- La case X= %d, Y= %d est morte\n", x, y);
-        (*grille).listePointeursLignes[x][y] = 0;
-    }
-    else if (*nbVoisins == 3){
-        //printf("- La case X= %d, Y= %d est née\n", x, y);
-        (*grille).listePointeursLignes[x][y] = 1;
-    }
-    else{
-        //printf("Erreur\n");
-        //printf("La case X= %d, Y= %d\n", x, y);
-        // Tousq les autres cas non traités comme les cases vides avec 2 voisins etc...
-    }
-}
-
-
 
 // Différentes possibilités pour la fonction VérifierCaseVivante
 // 1 - une cellule vivante ayant exactement 2 ou 3 voisins vivants survit à la génération suivante ;
