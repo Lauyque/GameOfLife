@@ -59,7 +59,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         char tourText[100];
         sprintf(tourText, "Tour : %d", tour); // Utiliser %d pour les entiers
         afficherTexte(ren, font, tourText, largeurEcran - 90, 25, color);
-        
+
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
         // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
@@ -73,6 +73,9 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Afficher le bouton "Quitter" en bas au centre
         SDL_Rect retourRect = afficherTexte(ren, font, "Quitter", largeurEcran / 2 - 50, hauteurEcran - 50, color);
 
+        // Mettre un bouton pause à droite
+        SDL_Rect pauseRect = afficherTexte(ren, font, "Pause", largeurEcran - 100, hauteurEcran - 50, color);
+
 
         SDL_Event e;
         while (SDL_PollEvent(&e))
@@ -85,10 +88,60 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
             {
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
+
+                // QUITTER
                 if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w &&
                     mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h)
                 {
                     runningJeu = 0;
+                }
+                // PAUSE
+                else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
+                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
+                {
+                    printf("Pause\n");
+                    int paused = 1;
+                    while (paused){
+                        // Griser l'écran
+                        SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
+
+                        // Afficher en grand le message de pause
+                        SDL_Rect pauseMessageRect = afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
+
+                        // Appliquer les modifications
+                        SDL_RenderPresent(ren);
+
+                        SDL_Event e;
+                        while (SDL_PollEvent(&e))
+                        {
+                            if (e.type == SDL_QUIT)
+                            {
+                                runningJeu = 0;
+                                paused = 0;
+                            }
+                            else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+                            {
+                                int mouseX = e.button.x;
+                                int mouseY = e.button.y;
+
+                                // QUITTER
+                                if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w &&
+                                    mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h)
+                                {
+                                    runningJeu = 0;
+                                    paused = 0;
+                                }
+
+                                // PAUSE
+                                if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
+                                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
+                                {
+                                    printf("Reprise\n");
+                                    paused = 0;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
