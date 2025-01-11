@@ -10,7 +10,7 @@
 #include "menu.c"
 
 
-int main( int argc, char* args[] ){
+int main(){
     // Définition de utf-8 pour les accents
     setlocale(LC_ALL, "fr_FR.UTF-8");
 

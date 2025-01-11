@@ -508,9 +508,8 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     inputText[2] = 'x';
                     inputText[3] = '1';
                     inputText[4] = '0';
-                    Grille grille = creationGrille(inputText);
+                    //Grille grille = creationGrille(inputText);
                     //libererGrille(&grille);
-                    return grille;
                 } else if (mouseX >= bouton2Rect.x && mouseX <= bouton2Rect.x + bouton2Rect.w && // Quand on clique sur le bouton "15*15"
                            mouseY >= bouton2Rect.y && mouseY <= bouton2Rect.y + bouton2Rect.h) {
                     inputText[0] = '1';
@@ -518,9 +517,8 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     inputText[2] = 'x';
                     inputText[3] = '1';
                     inputText[4] = '5';
-                    Grille grille = creationGrille(inputText);
+                    //Grille grille = creationGrille(inputText);
                     //libererGrille(&grille);
-                    return grille;
                 } else if (mouseX >= bouton3Rect.x && mouseX <= bouton3Rect.x + bouton3Rect.w && // Quand on clique sur le bouton "25*25"
                            mouseY >= bouton3Rect.y && mouseY <= bouton3Rect.y + bouton3Rect.h) {
                     inputText[0] = '2';
@@ -528,9 +526,8 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     inputText[2] = 'x';
                     inputText[3] = '2';
                     inputText[4] = '5';
-                    Grille grille = creationGrille(inputText);
+                    //Grille grille = creationGrille(inputText);
                     //libererGrille(&grille);
-                    return grille;
                 } else if (mouseX >= bouton4Rect.x && mouseX <= bouton4Rect.x + bouton4Rect.w && // Quand on clique sur le bouton "50*50"
                            mouseY >= bouton4Rect.y && mouseY <= bouton4Rect.y + bouton4Rect.h) {
                     inputText[0] = '5';
@@ -538,9 +535,8 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     inputText[2] = 'x';
                     inputText[3] = '5';
                     inputText[4] = '0';
-                    Grille grille = creationGrille(inputText);
+                    //Grille grille = creationGrille(inputText);
                     //libererGrille(&grille);
-                    return grille;
                 }
             }
 
@@ -562,7 +558,7 @@ void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Re
             if (e.type == SDL_QUIT) {
                 runningInput = 0;
             } else if (e.type == SDL_TEXTINPUT) { // quand on tape un caractère
-                if (strlen(inputText) < maxLength - 1) {
+                if (strlen(inputText) < (size_t)(maxLength - 1)) {
                     strcat(inputText, e.text.text);
                 }
             } else if (e.type == SDL_KEYDOWN) { // quand on appuie sur la touche backspace ou entrée
