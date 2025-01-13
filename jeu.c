@@ -21,7 +21,12 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
     int tour = 1;
-    const int DELAY = 100; // Délai en millisecondes entre chaque tour
+    const int DELAY = 200; // Délai en millisecondes entre chaque tour
+
+    SDL_Rect tourTextRect; // Initialisation de la taille du texte pour le premier tour
+    //tourTextRect.w = 0;
+    //tourTextRect.h = 0;
+    SDL_Rect retourRect; // Initialisation de la taille du texte pour le bouton "Quitter"
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
@@ -51,15 +56,19 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Afficher la grille dans le rectangle
         afficherGrilleJeu(grille, ren, font, color);
 
-    // rectangle a la toute droite de l'écran pour afficher le nombre de tour
-        SDL_Rect tourRect = {largeurEcran - 100, 20, 80, 30};
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
-        SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
-
         // transformer un int en char
         char tourText[100];
         sprintf(tourText, "Tour : %d", tour); // Utiliser %d pour les entiers
-        afficherTexte(ren, font, tourText, largeurEcran - 90, 25, color);
+
+        // Obtenir les dimensions du texte
+        SDL_Rect tourTextRect = afficherTexte(ren, font, tourText, largeurEcran - 90, 25, color);
+
+        // rectangle à la toute droite de l'écran pour afficher le nombre de tours
+        SDL_Rect tourRect = {largeurEcran - 100, 20, tourTextRect.w + 20, tourTextRect.h + 10};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
+
+        printf("width : %d, height : %d\n", tourTextRect.w, tourTextRect.h);
 
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
