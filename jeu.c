@@ -14,13 +14,14 @@
 
 // PROTOTYPES
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille);
-void AfficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
+void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
 
 // Jeu
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
     int tour = 1;
+    const int DELAY = 100; // Délai en millisecondes entre chaque tour
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
@@ -48,7 +49,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_RenderDrawRect(ren, &grilleRect); // Dessiner le rectangle
 
         // Afficher la grille dans le rectangle
-        AfficherGrilleJeu(grille, ren, font, color);
+        afficherGrilleJeu(grille, ren, font, color);
 
     // rectangle a la toute droite de l'écran pour afficher le nombre de tour
         SDL_Rect tourRect = {largeurEcran - 100, 20, 80, 30};
@@ -63,12 +64,10 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
         // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
-        if (SDL_GetTicks() % 100 == 0){
-            VérifierCaseVivante(grille);
+        VérifierCaseVivante(grille);
 
-            // Augmenter le nombre de tour
-            tour++;
-        }
+        // Augmenter le nombre de tour
+        tour++;
 
         // Afficher le bouton "Quitter" en bas au centre
         SDL_Rect retourRect = afficherTexte(ren, font, "Quitter", largeurEcran / 2 - 50, hauteurEcran - 50, color);
@@ -148,6 +147,9 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
         // Afficher le rendu
         SDL_RenderPresent(ren);
+
+        // Attendre un délai fixe avant le prochain tour
+        SDL_Delay(DELAY);
     }
     
     // Suppression de la grille
@@ -157,7 +159,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 }
 
 // Fonction pour afficher la grille dans le jeu
-void AfficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
+void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
