@@ -321,6 +321,8 @@ int lancementMenu()
                             runningMenu = 0;
                         }
                         libererGrille(&grille);
+                    } else {
+                        libererGrille(&grille);
                     }
                     
                 }
@@ -502,7 +504,7 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
 
     while (runningChoixGrille == 1) {
         // Effacer l'écran
-        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
+        SDL_SetRenderDrawColor(ren, 100, 100, 100, 255);
         SDL_RenderClear(ren);
 
         // Afficher le titre
@@ -542,56 +544,55 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
 
         // Zone de saisie de texte
         SDL_Rect saisieRect = {(largeurEcran /2) - 250, 250, 500, 30};
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur noir
         //SDL_RenderDrawRect(ren, &saisieRect); // Dessiner le rectangle
         SDL_RenderFillRect(ren, &saisieRect); // Dessiner le rectangle
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
         afficherTexte(ren, font, inputText, saisieRect.x + 5, saisieRect.y + 5, color);
 
         // Afficher les boutons avec 4 choix prédéfinis
-        SDL_Rect bouton1Rect = afficherTexte(ren, font, "10*10", (largeurEcran /2) -125, 350, color);
-        SDL_Rect bouton2Rect = afficherTexte(ren, font, "15*15", (largeurEcran /2) +85, 350, color);
-        SDL_Rect bouton3Rect = afficherTexte(ren, font, "25*25", (largeurEcran /2) -125, 450, color);
-        SDL_Rect bouton4Rect = afficherTexte(ren, font, "50*50", (largeurEcran /2) +85, 450, color);
-        bouton1Rect.w += 20; // Permet d'agrandir la zone de clic en largeur
-        bouton2Rect.w += 20;
-        bouton3Rect.w += 20;
-        bouton4Rect.w += 20;
-
-        bouton1Rect.h += 10; // Permet d'agrandir la zone de clic en hauteur
-        bouton2Rect.h += 10;
-        bouton3Rect.h += 10;
-        bouton4Rect.h += 10;
-
-        bouton1Rect.x -= 10; // Permet de commencer la zone de clic plus à gauche
-        bouton2Rect.x -= 10;
-        bouton3Rect.x -= 10;
-        bouton4Rect.x -= 10;
-
-        bouton1Rect.y -= 5; // Permet de commencer la zone de clic plus en haut
-        bouton2Rect.y -= 5;
-        bouton3Rect.y -= 5;
-        bouton4Rect.y -= 5;
-        SDL_RenderDrawRect(ren, &bouton1Rect);
-        SDL_RenderDrawRect(ren, &bouton2Rect);
-        SDL_RenderDrawRect(ren, &bouton3Rect);
-        SDL_RenderDrawRect(ren, &bouton4Rect);
-
-        // Afficher le bouton "Retour"
-        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", (largeurEcran /2) -125, 550, color);
-        retourRect.w += 20; 
-        retourRect.h += 10;
-        retourRect.x -= 10;
-        retourRect.y -= 5;
-        SDL_RenderDrawRect(ren, &retourRect);
+        // Premier affichage du text pour avoir ces dimenssions
+        SDL_Rect bouton1TextRect = afficherTexte(ren, font, "10*10", (largeurEcran /2) - 250, 350, color); // à gauche
+        SDL_Rect bouton2TextRect = afficherTexte(ren, font, "20*20", (largeurEcran /2) - 250, 350, color);
+        SDL_Rect bouton3TextRect = afficherTexte(ren, font, "25*25", (largeurEcran /2) - 250, 450, color); // à droite
+        SDL_Rect bouton4TextRect = afficherTexte(ren, font, "80*40", (largeurEcran /2) - 250, 450, color);
+        SDL_Rect bouton5TextRect = afficherTexte(ren, font, "15*15", (largeurEcran /2) - 250, 350, color); // au centre
+        SDL_Rect bouton6TextRect = afficherTexte(ren, font, "50*50", (largeurEcran /2) - 250, 450, color);
+        // Création des rectangles
+        SDL_Rect bouton1Rect = {bouton1TextRect.x, bouton1TextRect.y, bouton1TextRect.w + 40, bouton1TextRect.h + 20};
+        SDL_Rect bouton2Rect = {(largeurEcran /2) + saisieRect.w/2 - (bouton2TextRect.w + 40), bouton2TextRect.y, bouton2TextRect.w + 40, bouton2TextRect.h + 20};
+        SDL_Rect bouton3Rect = {bouton3TextRect.x, bouton3TextRect.y, bouton3TextRect.w + 40, bouton3TextRect.h + 20};
+        SDL_Rect bouton4Rect = {(largeurEcran /2) + saisieRect.w/2 - (bouton4TextRect.w + 40), bouton4TextRect.y, bouton4TextRect.w + 40, bouton4TextRect.h + 20};
+        SDL_Rect bouton5Rect = {(largeurEcran /2) - (bouton5TextRect.w/2 + 20), bouton5TextRect.y, bouton5TextRect.w + 40, bouton5TextRect.h + 20};
+        SDL_Rect bouton6Rect = {(largeurEcran /2) - (bouton6TextRect.w/2 + 20), bouton6TextRect.y, bouton6TextRect.w + 40, bouton6TextRect.h + 20};
+        // Remplir les rectangles
+        SDL_RenderFillRect(ren, &bouton1Rect);
+        SDL_RenderFillRect(ren, &bouton2Rect);
+        SDL_RenderFillRect(ren, &bouton3Rect);
+        SDL_RenderFillRect(ren, &bouton4Rect);
+        SDL_RenderFillRect(ren, &bouton5Rect);
+        SDL_RenderFillRect(ren, &bouton6Rect);
+        // Afficher les textes
+        bouton1TextRect = afficherTexte(ren, font, "10*10", bouton1Rect.x + ((bouton1Rect.w/2)-bouton1TextRect.w/2), bouton1Rect.y + ((bouton1Rect.h/2)-(bouton1TextRect.h/2)), color);
+        bouton2TextRect = afficherTexte(ren, font, "20*20", bouton2Rect.x + ((bouton2Rect.w/2)-bouton2TextRect.w/2), bouton2Rect.y + ((bouton2Rect.h/2)-(bouton2TextRect.h/2)), color);
+        bouton3TextRect = afficherTexte(ren, font, "25*25", bouton3Rect.x + ((bouton3Rect.w/2)-bouton3TextRect.w/2), bouton3Rect.y + ((bouton3Rect.h/2)-(bouton3TextRect.h/2)), color);
+        bouton4TextRect = afficherTexte(ren, font, "80*40", bouton4Rect.x + ((bouton4Rect.w/2)-bouton4TextRect.w/2), bouton4Rect.y + ((bouton4Rect.h/2)-(bouton4TextRect.h/2)), color);
+        bouton5TextRect = afficherTexte(ren, font, "15*15", bouton5Rect.x + ((bouton5Rect.w/2)-bouton5TextRect.w/2), bouton5Rect.y + ((bouton5Rect.h/2)-(bouton5TextRect.h/2)), color);
+        bouton6TextRect = afficherTexte(ren, font, "50*50", bouton6Rect.x + ((bouton6Rect.w/2)-bouton6TextRect.w/2), bouton6Rect.y + ((bouton6Rect.h/2)-(bouton6TextRect.h/2)), color);
 
         // Afficher le bouton "Jouer"
-        SDL_Rect jouerRect = afficherTexte(ren, font, "Jouer", (largeurEcran /2) +85, 550, color);
-        jouerRect.w += 20; 
-        jouerRect.h += 10;
-        jouerRect.x -= 10;
-        jouerRect.y -= 5;
-        SDL_RenderDrawRect(ren, &jouerRect);
+        SDL_Rect jouerTextRect = afficherTexte(ren, font, "Jouer", (largeurEcran /2) - 200, 550, color);
+        SDL_Rect jouerRect = {jouerTextRect.x, jouerTextRect.y, 400, 40};
+        SDL_SetRenderDrawColor(ren, 0, 255, 0, 255); // Vert
+        SDL_RenderFillRect(ren, &jouerRect);
+        jouerTextRect = afficherTexte(ren, font, "Jouer", (largeurEcran /2) - (jouerTextRect.w/2), (jouerTextRect.y) + (jouerTextRect.h/2), color);
+
+        SDL_Rect retourTextRect = afficherTexte(ren, font, "Retour", (largeurEcran /2) - 200, 600, color);
+        SDL_Rect retourRect = {retourTextRect.x, retourTextRect.y, 400, 40};
+        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // Rouge
+        SDL_RenderFillRect(ren, &retourRect);
+        retourTextRect = afficherTexte(ren, font, "Retour", (largeurEcran /2) - (retourTextRect.w/2), (retourTextRect.y) + (retourTextRect.h/2), color);
+        
 
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
@@ -623,11 +624,11 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     //libererGrille(&grille);
                 } else if (mouseX >= bouton2Rect.x && mouseX <= bouton2Rect.x + bouton2Rect.w && // Quand on clique sur le bouton "15*15"
                            mouseY >= bouton2Rect.y && mouseY <= bouton2Rect.y + bouton2Rect.h) {
-                    inputText[0] = '1';
-                    inputText[1] = '5';
+                    inputText[0] = '2';
+                    inputText[1] = '0';
                     inputText[2] = 'x';
-                    inputText[3] = '1';
-                    inputText[4] = '5';
+                    inputText[3] = '2';
+                    inputText[4] = '0';
                     //Grille grille = creationGrille(inputText);
                     //libererGrille(&grille);
                 } else if (mouseX >= bouton3Rect.x && mouseX <= bouton3Rect.x + bouton3Rect.w && // Quand on clique sur le bouton "25*25"
@@ -641,6 +642,24 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     //libererGrille(&grille);
                 } else if (mouseX >= bouton4Rect.x && mouseX <= bouton4Rect.x + bouton4Rect.w && // Quand on clique sur le bouton "50*50"
                            mouseY >= bouton4Rect.y && mouseY <= bouton4Rect.y + bouton4Rect.h) {
+                    inputText[0] = '8';
+                    inputText[1] = '0';
+                    inputText[2] = 'x';
+                    inputText[3] = '4';
+                    inputText[4] = '0';
+                    //Grille grille = creationGrille(inputText);
+                    //libererGrille(&grille);
+                } else if (mouseX >= bouton5Rect.x && mouseX <= bouton5Rect.x + bouton5Rect.w && // Quand on clique sur le bouton "20*20"
+                           mouseY >= bouton5Rect.y && mouseY <= bouton5Rect.y + bouton5Rect.h) {
+                    inputText[0] = '1';
+                    inputText[1] = '5';
+                    inputText[2] = 'x';
+                    inputText[3] = '1';
+                    inputText[4] = '5';
+                    //Grille grille = creationGrille(inputText);
+                    //libererGrille(&grille);
+                } else if (mouseX >= bouton6Rect.x && mouseX <= bouton6Rect.x + bouton6Rect.w && // Quand on clique sur le bouton "25*25"
+                           mouseY >= bouton6Rect.y && mouseY <= bouton6Rect.y + bouton6Rect.h) {
                     inputText[0] = '5';
                     inputText[1] = '0';
                     inputText[2] = 'x';
