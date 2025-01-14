@@ -35,10 +35,10 @@ Grille creationGrille(const char *input){
     strcpy(input, inputSauv);
 
 
-    // Allocution de la mémoire pour la liste de pointeurs
+    // Allocation de la mémoire pour la liste de pointeurs
     grille.listePointeursLignes = (int**)malloc(grille.tailleX * sizeof(int*));
     
-    // Vérification de la bonne allocution de la mémoire
+    // Vérification de la bonne allocation de la mémoire
     if (grille.listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
         exit(EXIT_FAILURE);
