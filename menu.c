@@ -541,16 +541,18 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
         titleTextRect = afficherTexte(ren, fontTitle, "Choisissez la taille de votre grille", titleTextX, titleTextY, color);
 
         // Zone de saisie de texte
-        SDL_Rect saisieRect = {500, 300, 400, 25};
+        SDL_Rect saisieRect = {(largeurEcran /2) - 250, 250, 500, 30};
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
+        //SDL_RenderDrawRect(ren, &saisieRect); // Dessiner le rectangle
+        SDL_RenderFillRect(ren, &saisieRect); // Dessiner le rectangle
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
-        SDL_RenderDrawRect(ren, &saisieRect); // Dessiner le rectangle
         afficherTexte(ren, font, inputText, saisieRect.x + 5, saisieRect.y + 5, color);
 
         // Afficher les boutons avec 4 choix prédéfinis
-        SDL_Rect bouton1Rect = afficherTexte(ren, font, "10*10", 300, 350, color);
-        SDL_Rect bouton2Rect = afficherTexte(ren, font, "15*15", 300, 450, color);
-        SDL_Rect bouton3Rect = afficherTexte(ren, font, "25*25", 400, 350, color);
-        SDL_Rect bouton4Rect = afficherTexte(ren, font, "50*50", 400, 450, color);
+        SDL_Rect bouton1Rect = afficherTexte(ren, font, "10*10", (largeurEcran /2) -125, 350, color);
+        SDL_Rect bouton2Rect = afficherTexte(ren, font, "15*15", (largeurEcran /2) +85, 350, color);
+        SDL_Rect bouton3Rect = afficherTexte(ren, font, "25*25", (largeurEcran /2) -125, 450, color);
+        SDL_Rect bouton4Rect = afficherTexte(ren, font, "50*50", (largeurEcran /2) +85, 450, color);
         bouton1Rect.w += 20; // Permet d'agrandir la zone de clic en largeur
         bouton2Rect.w += 20;
         bouton3Rect.w += 20;
@@ -576,11 +578,19 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
         SDL_RenderDrawRect(ren, &bouton4Rect);
 
         // Afficher le bouton "Retour"
-        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", 600, 450, color);
+        SDL_Rect retourRect = afficherTexte(ren, font, "Retour", (largeurEcran /2) -125, 550, color);
+        retourRect.w += 20; 
+        retourRect.h += 10;
+        retourRect.x -= 10;
+        retourRect.y -= 5;
         SDL_RenderDrawRect(ren, &retourRect);
 
-        // Afficher le bouton "Retour"
-        SDL_Rect jouerRect = afficherTexte(ren, font, "Jouer", 600, 350, color);
+        // Afficher le bouton "Jouer"
+        SDL_Rect jouerRect = afficherTexte(ren, font, "Jouer", (largeurEcran /2) +85, 550, color);
+        jouerRect.w += 20; 
+        jouerRect.h += 10;
+        jouerRect.x -= 10;
+        jouerRect.y -= 5;
         SDL_RenderDrawRect(ren, &jouerRect);
 
         SDL_Event e;
