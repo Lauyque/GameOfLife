@@ -167,13 +167,40 @@ int lancementMenu()
 
         // Affichage du bouton quitter
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
-        SDL_Rect quitterRect = afficherTexte(ren, font, "Quitter", (largeurEcran/2), (hauteurEcran-50), white);
+        // Définir le rectangle du bouton quitter
+        SDL_Rect quitterRect = {largeurEcran / 2 - 50, hauteurEcran - 50, 100, 50}; // Centré en bas
+        // Remplir le rectangle du bouton quitter avec une couleur
+        // Rajouter 2 triangle sur les 2 cotés du rectangle
+        // Triangle gauche
+        SDL_Point triangleGauche[4] = {{quitterRect.x, quitterRect.y}, {quitterRect.x, quitterRect.y + 50}, {quitterRect.x -30, quitterRect.y + 50}, {quitterRect.x, quitterRect.y}};
+        SDL_Point triangleDroite[4] = {{quitterRect.x + quitterRect.w, quitterRect.y}, {quitterRect.x + quitterRect.w, quitterRect.y + 50}, {(quitterRect.x + quitterRect.w) +30, quitterRect.y + 50}, {quitterRect.x + quitterRect.w, quitterRect.y}};
+        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // Rouge pour toutes les formes du quitter
+        SDL_RenderDrawLines(ren, triangleGauche, 4);
+        SDL_RenderDrawLines(ren, triangleDroite, 4);
+        SDL_RenderFillRect(ren, &quitterRect);
+
+        // Remplir le triangle gauche
+        for (int y = triangleGauche[0].y; y <= triangleGauche[1].y; ++y) {
+            int startX = triangleGauche[0].x;
+            int endX = startX - (y - triangleGauche[0].y) * 30 / 50;
+            SDL_RenderDrawLine(ren, startX, y, endX, y);
+        }
+
+        // Remplir le triangle droite
+        for (int y = triangleDroite[0].y; y <= triangleDroite[1].y; ++y) {
+            int startX = triangleDroite[0].x;
+            int endX = startX + (y - triangleDroite[0].y) * 30 / 50;
+            SDL_RenderDrawLine(ren, startX, y, endX, y);
+        }
+
+        // Afficher le texte "Quitter" centré dans le rectangle
+        SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, white);
         quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
         quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
         quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
         quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-        SDL_RenderDrawRect(ren, &quitterRect);
+        //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        //SDL_RenderDrawRect(ren, &quitterRect);
 
         SDL_Event e;
         while (SDL_PollEvent(&e))
