@@ -221,7 +221,40 @@ int lancementMenu()
         }
 
         // Afficher le titre
-        SDL_Rect titleRect = afficherTexte(ren, fontTitle, "Game Of Life", ((largeurEcran/2)-(100)), 10,  white);
+        // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
+        SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", ((largeurEcran/2)-(100)), 10,  white);
+        SDL_Rect titleRect = {largeurEcran / 2 - 400, 0, 800, 55};
+        // triangles pour le titre
+        SDL_Point triangleGaucheTitle[4] = {{titleRect.x, titleRect.y}, {titleRect.x, titleRect.y + titleRect.h - 1}, {titleRect.x - 30, titleRect.y}, {titleRect.x, titleRect.y}};
+        SDL_Point triangleDroiteTitle[4] = {{titleRect.x + titleRect.w, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y + titleRect.h - 1}, {(titleRect.x + titleRect.w) + 30, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y}};
+
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Rouge pour toutes les formes du titre
+        SDL_RenderDrawLines(ren, triangleGaucheTitle, 4);
+        SDL_RenderDrawLines(ren, triangleDroiteTitle, 4);
+        SDL_RenderFillRect(ren, &titleRect);
+
+        // Remplir le triangle gauche
+        for (int y = triangleGaucheTitle[0].y; y <= triangleGaucheTitle[1].y; ++y) {
+            int startX = triangleGaucheTitle[0].x;
+            int endX = startX - (triangleGaucheTitle[1].y - y) * 30 / 50;
+            SDL_RenderDrawLine(ren, endX, y, startX, y);
+        }
+
+        // Remplir le triangle droite
+        for (int y = triangleDroiteTitle[0].y; y <= triangleDroiteTitle[1].y; ++y) {
+            int startX = triangleDroiteTitle[0].x;
+            int endX = startX + (triangleDroiteTitle[1].y - y) * 30 / 50;
+            SDL_RenderDrawLine(ren, startX, y, endX, y);
+        }
+
+        // Centrer le texte du titre par rapport à titleRect
+        int titleTextWidth = titleTextRect.w;
+        int titleTextHeight = titleTextRect.h;
+        int titleTextX = titleRect.x + (titleRect.w - titleTextWidth) / 2;
+        int titleTextY = titleRect.y + (titleRect.h - titleTextHeight) / 2;
+        // Afficher le texte du titre centré
+        titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", titleTextX, titleTextY, white);
+
 
         // Calculer les marges pour centrer les rectangles
         int marginX = (largeurEcran - (3 * 200 + 2 * 50)) / 2;
