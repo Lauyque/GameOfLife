@@ -233,8 +233,11 @@ int lancementMenu()
             for (int col = 0; col < 3; ++col)
             {
                 SDL_Rect rect = {marginX + col * (200 + 50), marginY + row * (150 + 50), 200, 150};
-                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Blanc
                 SDL_RenderDrawRect(ren, &rect);
+
+                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Noir
+                SDL_RenderFillRect(ren, &rect); // Remplir les rectangles
 
                 // Dessiner le nom
                 SDL_Rect nameRect = afficherNom(ren, font, rect, nomOptions[row * 3 + col], white);
