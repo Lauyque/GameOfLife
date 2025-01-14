@@ -127,7 +127,7 @@ int lancementMenu()
     }
 
     // Déclaration des fonts
-    SDL_Color black = {255, 255, 255, 255};
+    SDL_Color black = {0, 0, 0, 255};
     SDL_Color white = {255, 255, 255, 255};
     TTF_Font *fontTitle = TTF_OpenFont(fontPathVdub, 24);
     TTF_Font *font = TTF_OpenFont(fontPathArial, 18);
