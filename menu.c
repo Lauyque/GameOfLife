@@ -127,7 +127,7 @@ int lancementMenu()
     }
 
     // Déclaration des fonts
-    SDL_Color black = {255, 255, 255, 255};
+    SDL_Color black = {0, 0, 0, 255};
     SDL_Color white = {255, 255, 255, 255};
     TTF_Font *fontTitle = TTF_OpenFont(fontPathVdub, 24);
     TTF_Font *font = TTF_OpenFont(fontPathArial, 18);
@@ -139,7 +139,7 @@ int lancementMenu()
 
 
     // Afficher une image de fond avec sdl2 image
-    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu.png");
+    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu2.png");
     if (background == NULL)
     {
         printf("IMG_Load Error: %s\n", IMG_GetError());
