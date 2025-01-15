@@ -44,9 +44,44 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_GetCurrentDisplayMode(0, &DM);
         int largeurEcran = DM.w;
         int hauteurEcran = DM.h;
+        
+        // Afficher le titre
+        // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
+        SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, nom, ((largeurEcran/2)-(400)), 10,  color);
+        SDL_Rect titleRect = {largeurEcran / 2 - 400, 0, 800, 55};
+        // triangles pour le titre
+        SDL_Point triangleGaucheTitle[4] = {{titleRect.x, titleRect.y}, {titleRect.x, titleRect.y + titleRect.h - 1}, {titleRect.x - 30, titleRect.y}, {titleRect.x, titleRect.y}};
+        SDL_Point triangleDroiteTitle[4] = {{titleRect.x + titleRect.w, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y + titleRect.h - 1}, {(titleRect.x + titleRect.w) + 30, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y}};
 
-        // Afficher le titre au centre en haut
-        SDL_Rect titleRect = afficherTexte(ren, fontTitle, nom, largeurEcran / 2 - 100, 20, color);
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Rouge pour toutes les formes du titre
+        SDL_RenderDrawLines(ren, triangleGaucheTitle, 4);
+        SDL_RenderDrawLines(ren, triangleDroiteTitle, 4);
+        SDL_RenderFillRect(ren, &titleRect);
+
+        // Remplir le triangle gauche
+        for (int y = triangleGaucheTitle[0].y; y <= triangleGaucheTitle[1].y; ++y) {
+            int startX = triangleGaucheTitle[0].x;
+            int endX = startX - (triangleGaucheTitle[1].y - y) * 30 / 50;
+            SDL_RenderDrawLine(ren, endX, y, startX, y);
+        }
+
+        // Remplir le triangle droite
+        for (int y = triangleDroiteTitle[0].y; y <= triangleDroiteTitle[1].y; ++y) {
+            int startX = triangleDroiteTitle[0].x;
+            int endX = startX + (triangleDroiteTitle[1].y - y) * 30 / 50;
+            SDL_RenderDrawLine(ren, startX, y, endX, y);
+        }
+
+        // Centrer le texte du titre par rapport à titleRect
+        int titleTextWidth = titleTextRect.w;
+        int titleTextHeight = titleTextRect.h;
+        int titleTextX = titleRect.x + (titleRect.w - titleTextWidth) / 2;
+        int titleTextY = titleRect.y + (titleRect.h - titleTextHeight) / 2;
+        // Afficher le texte du titre centré
+        titleTextRect = afficherTexte(ren, fontTitle, nom, titleTextX, titleTextY, color);
+
+
+
 
         // Faire un rectangle au centre de l'écran pour la grille adapter a la taille de la grille
         SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10, hauteurEcran / 2 - (*grille).tailleY * 10, (*grille).tailleX * 20, (*grille).tailleY * 20};
@@ -77,9 +112,6 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
         // Augmenter le nombre de tour
         tour++;
-
-        // Afficher le bouton "Quitter" en bas au centre
-        //SDL_Rect retourRect = afficherTexte(ren, font, "Quitter", largeurEcran / 2 - 50, hauteurEcran - 50, color);
 
         // Mettre un bouton pause à droite
         SDL_Rect pauseRect = afficherTexte(ren, font, "Pause", largeurEcran - 100, hauteurEcran - 50, color);
