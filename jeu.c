@@ -36,7 +36,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
     while(runningJeu == 1){
         // Effacer l'écran
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(ren, 100, 100, 100, 255);
         SDL_RenderClear(ren);
 
         // Récuperer les dimention de l'écran
@@ -44,7 +44,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_GetCurrentDisplayMode(0, &DM);
         int largeurEcran = DM.w;
         int hauteurEcran = DM.h;
-        
+
         // Afficher le titre
         // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
         SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, nom, ((largeurEcran/2)-(400)), 10,  color);
@@ -84,8 +84,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
 
         // Faire un rectangle au centre de l'écran pour la grille adapter a la taille de la grille
-        SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10, hauteurEcran / 2 - (*grille).tailleY * 10, (*grille).tailleX * 20, (*grille).tailleY * 20};
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10 + 1, hauteurEcran / 2 - (*grille).tailleY * 10 + 1, (*grille).tailleX * 20 + 0, (*grille).tailleY * 20 + 0}; // +1 pour afficher un contour
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
         SDL_RenderDrawRect(ren, &grilleRect); // Dessiner le rectangle
 
         // Afficher la grille dans le rectangle
@@ -253,21 +253,21 @@ void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Co
 
     for (int i = 0; i < (*grille).tailleX; i++){
         for (int j = 0; j < (*grille).tailleY; j++){
-            if ((*grille).listePointeursLignes[i][j] == 0 || (*grille).listePointeursLignes[i][j] == 1){
-                if ((*grille).listePointeursLignes[i][j] == 1){
-                    // Afficher un carré plein
-                    SDL_Rect caseRect = {grilleRect.x + i * 20, grilleRect.y + j * 20, 20, 20};
-                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
-                    SDL_RenderFillRect(ren, &caseRect);
-                } else {
-                    // Afficher un carré gris vide
-                    SDL_Rect caseRect = {grilleRect.x + i * 20, grilleRect.y + j * 20, 20, 20};
-                    SDL_SetRenderDrawColor(ren, 128, 128, 128, 255); // Couleur grise
-                    SDL_RenderFillRect(ren, &caseRect);
-                }
+            SDL_Rect caseRect = {grilleRect.x + i * 20, grilleRect.y + j * 20, 20, 20};
+            if ((*grille).listePointeursLignes[i][j] == 1){
+                // Afficher un carré plein
+                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+                SDL_RenderFillRect(ren, &caseRect);
+            } else if ((*grille).listePointeursLignes[i][j] == 0){
+                // Afficher un carré gris vide
+                SDL_SetRenderDrawColor(ren, 128, 128, 128, 255); // Couleur grise
+                SDL_RenderFillRect(ren, &caseRect);
             } else {
                 fprintf(stderr, "Erreur: valeur de la case incorrecte\n");
             }
+            // Dessiner le contour du carré
+            SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur noir
+            SDL_RenderDrawRect(ren, &caseRect);
         }
     }
 }

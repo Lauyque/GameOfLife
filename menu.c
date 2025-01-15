@@ -39,6 +39,8 @@ int lancementMenu()
 {
     // Variable pour la boucle principale
     int runningMenu = 1;
+    // Variable pour verifier si la fenetre est minimisé
+    int windowMinimized = 0;
 
     // Initialisation de SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -149,6 +151,7 @@ int lancementMenu()
     if (backgroundTexture == NULL)
     {
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        printf("- Impossible d'afficher l'image: %s\n", SDL_GetError());
         SDL_FreeSurface(background);
         runningMenu = 0;
     }
@@ -158,58 +161,17 @@ int lancementMenu()
     // Boucle principale
     while (runningMenu)
     {
-        // Effacer l'écran
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-        SDL_RenderClear(ren);
-
-        // Appliquer la texture de fond
-        SDL_RenderCopy(ren, backgroundTexture, NULL, NULL); // Copier la texture sur le renderer
-
         // Affichage du bouton quitter
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
         // Définir le rectangle du bouton quitter
         SDL_Rect quitterRect = {largeurEcran / 2 - 50, hauteurEcran - 50, 100, 50}; // Centré en bas
-        // Remplir le rectangle du bouton quitter avec une couleur
-        // Rajouter 2 triangle sur les 2 cotés du rectangle
-        // Triangle gauche
-        SDL_Point triangleGauche[4] = {{quitterRect.x, quitterRect.y}, {quitterRect.x, quitterRect.y + 50}, {quitterRect.x -30, quitterRect.y + 50}, {quitterRect.x, quitterRect.y}};
-        SDL_Point triangleDroite[4] = {{quitterRect.x + quitterRect.w, quitterRect.y}, {quitterRect.x + quitterRect.w, quitterRect.y + 50}, {(quitterRect.x + quitterRect.w) +30, quitterRect.y + 50}, {quitterRect.x + quitterRect.w, quitterRect.y}};
-        SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // Rouge pour toutes les formes du quitter
-        SDL_RenderDrawLines(ren, triangleGauche, 4);
-        SDL_RenderDrawLines(ren, triangleDroite, 4);
-        SDL_RenderFillRect(ren, &quitterRect);
 
-        // Remplir le triangle gauche
-        for (int y = triangleGauche[0].y; y <= triangleGauche[1].y; ++y) {
-            int startX = triangleGauche[0].x;
-            int endX = startX - (y - triangleGauche[0].y) * 30 / 50;
-            SDL_RenderDrawLine(ren, startX, y, endX, y);
-        }
-
-        // Remplir le triangle droite
-        for (int y = triangleDroite[0].y; y <= triangleDroite[1].y; ++y) {
-            int startX = triangleDroite[0].x;
-            int endX = startX + (y - triangleDroite[0].y) * 30 / 50;
-            SDL_RenderDrawLine(ren, startX, y, endX, y);
-        }
-
-        // Afficher le texte "Quitter" centré dans le rectangle
-        SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, white);
-        quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
-        quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
-        quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
-        quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
-        //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-        //SDL_RenderDrawRect(ren, &quitterRect);
-
+        // Gestion des événements de la fenêtre
         SDL_Event e;
-        while (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT)
-            {
-                runningMenu = 0;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
-            {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                    runningMenu = 0;
+            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
@@ -217,120 +179,195 @@ int lancementMenu()
                 {
                     runningMenu = 0;
                 }
+            } else if (e.type == SDL_WINDOWEVENT) {
+                if (e.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+                    windowMinimized = 1;
+                    printf("Fenetre minimisée\n");
+                } else if (e.window.event == SDL_WINDOWEVENT_RESTORED) {
+                    windowMinimized = 0;
+                    printf("Fenetre restaurée\n");
+                } else if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+                    windowMinimized = 1;
+                    printf("Fenetre perdue de focus\n");
+                } else if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+                    windowMinimized = 0;
+                    printf("Fenetre regagnée de focus\n");
+                }
+            } else if (e.type == SDL_QUIT) {
+                runningMenu = 0;
             }
         }
+        if (windowMinimized == 0){
+            // Effacer l'écran
+            SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+            SDL_RenderClear(ren);
 
-        // Afficher le titre
-        // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
-        SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", ((largeurEcran/2)-(100)), 10,  white);
-        SDL_Rect titleRect = {largeurEcran / 2 - 400, 0, 800, 55};
-        // triangles pour le titre
-        SDL_Point triangleGaucheTitle[4] = {{titleRect.x, titleRect.y}, {titleRect.x, titleRect.y + titleRect.h - 1}, {titleRect.x - 30, titleRect.y}, {titleRect.x, titleRect.y}};
-        SDL_Point triangleDroiteTitle[4] = {{titleRect.x + titleRect.w, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y + titleRect.h - 1}, {(titleRect.x + titleRect.w) + 30, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y}};
+            // Appliquer la texture de fond
+            SDL_RenderCopy(ren, backgroundTexture, NULL, NULL); // Copier la texture sur le renderer
 
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Rouge pour toutes les formes du titre
-        SDL_RenderDrawLines(ren, triangleGaucheTitle, 4);
-        SDL_RenderDrawLines(ren, triangleDroiteTitle, 4);
-        SDL_RenderFillRect(ren, &titleRect);
+            // Remplir le rectangle du bouton quitter avec une couleur
+            // Rajouter 2 triangle sur les 2 cotés du rectangle
+            // Triangle gauche
+            SDL_Point triangleGauche[4] = {{quitterRect.x, quitterRect.y}, {quitterRect.x, quitterRect.y + 50}, {quitterRect.x -30, quitterRect.y + 50}, {quitterRect.x, quitterRect.y}};
+            SDL_Point triangleDroite[4] = {{quitterRect.x + quitterRect.w, quitterRect.y}, {quitterRect.x + quitterRect.w, quitterRect.y + 50}, {(quitterRect.x + quitterRect.w) +30, quitterRect.y + 50}, {quitterRect.x + quitterRect.w, quitterRect.y}};
+            SDL_SetRenderDrawColor(ren, 255, 0, 0, 255); // Rouge pour toutes les formes du quitter
+            SDL_RenderDrawLines(ren, triangleGauche, 4);
+            SDL_RenderDrawLines(ren, triangleDroite, 4);
+            SDL_RenderFillRect(ren, &quitterRect);
 
-        // Remplir le triangle gauche
-        for (int y = triangleGaucheTitle[0].y; y <= triangleGaucheTitle[1].y; ++y) {
-            int startX = triangleGaucheTitle[0].x;
-            int endX = startX - (triangleGaucheTitle[1].y - y) * 30 / 50;
-            SDL_RenderDrawLine(ren, endX, y, startX, y);
-        }
+            // Remplir le triangle gauche
+            for (int y = triangleGauche[0].y; y <= triangleGauche[1].y; ++y) {
+                int startX = triangleGauche[0].x;
+                int endX = startX - (y - triangleGauche[0].y) * 30 / 50;
+                SDL_RenderDrawLine(ren, startX, y, endX, y);
+            }
 
-        // Remplir le triangle droite
-        for (int y = triangleDroiteTitle[0].y; y <= triangleDroiteTitle[1].y; ++y) {
-            int startX = triangleDroiteTitle[0].x;
-            int endX = startX + (triangleDroiteTitle[1].y - y) * 30 / 50;
-            SDL_RenderDrawLine(ren, startX, y, endX, y);
-        }
+            // Remplir le triangle droite
+            for (int y = triangleDroite[0].y; y <= triangleDroite[1].y; ++y) {
+                int startX = triangleDroite[0].x;
+                int endX = startX + (y - triangleDroite[0].y) * 30 / 50;
+                SDL_RenderDrawLine(ren, startX, y, endX, y);
+            }
 
-        // Centrer le texte du titre par rapport à titleRect
-        int titleTextWidth = titleTextRect.w;
-        int titleTextHeight = titleTextRect.h;
-        int titleTextX = titleRect.x + (titleRect.w - titleTextWidth) / 2;
-        int titleTextY = titleRect.y + (titleRect.h - titleTextHeight) / 2;
-        // Afficher le texte du titre centré
-        titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", titleTextX, titleTextY, white);
+            // Afficher le texte "Quitter" centré dans le rectangle
+            SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, white);
+            quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
+            quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
+            quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
+            quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
+            //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+            //SDL_RenderDrawRect(ren, &quitterRect);
 
-
-        // Calculer les marges pour centrer les rectangles
-        int marginX = (largeurEcran - (3 * 200 + 2 * 50)) / 2;
-        int marginY = (hauteurEcran - (2 * 150 + 1 * 50)) / 2;
-
-        // Afficher les rectangles
-        for (int row = 0; row < 2; ++row)
-        {
-            for (int col = 0; col < 3; ++col)
+            SDL_Event e;
+            while (SDL_PollEvent(&e))
             {
-                SDL_Rect rect = {marginX + col * (200 + 50), marginY + row * (150 + 50), 200, 150};
-                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Blanc
-                SDL_RenderDrawRect(ren, &rect);
-
-                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Noir
-                SDL_RenderFillRect(ren, &rect); // Remplir les rectangles
-
-                // Dessiner le nom
-                SDL_Rect nameRect = afficherNom(ren, font, rect, nomOptions[row * 3 + col], white);
-                // Dessiner l'image
-                SDL_Rect imgRect = afficherImage(ren, imagePaths[row * 3 + col], rect);
-                // Dessiner "plus d'information"
-                SDL_Rect infoRect = afficherTexte(ren, font, "Plus d'information", rect.x + (rect.w/4+10) / 2, rect.y + 120, white);
-
-                // Vérifier si on clique sur "plus d'information"
-                int mouseX, mouseY;
-                Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
-                if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
-                    mouseX >= infoRect.x && mouseX <= infoRect.x + infoRect.w &&
-                    mouseY >= infoRect.y && mouseY <= infoRect.y + infoRect.h)
+                if (e.type == SDL_QUIT)
                 {
-                    //printf("Afficher plus d'information pour l'option %s\n", nomOptions[row * 3 + col]);
-                    if (lancementPlusInformation(ren, fontTitle, font, white, nomOptions[row * 3 + col], descriptionOptions[row * 3 + col]) != 0)
+                    runningMenu = 0;
+                } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+                {
+                    int mouseX = e.button.x;
+                    int mouseY = e.button.y;
+                    if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
+                        mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
                     {
-                        fprintf(stderr, "Erreur lors du lancement de plus d'information\n");
                         runningMenu = 0;
                     }
                 }
-                // Vérifier si on clique sur le nom ou l'image
-                if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
-                    ((mouseX >= nameRect.x && mouseX <= nameRect.x + nameRect.w &&
-                      mouseY >= nameRect.y && mouseY <= nameRect.y + nameRect.h) ||
-                     (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
-                      mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
+            }
+
+            // Afficher le titre
+            // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
+            SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", ((largeurEcran/2)-(100)), 10,  white);
+            SDL_Rect titleRect = {largeurEcran / 2 - 400, 0, 800, 55};
+            // triangles pour le titre
+            SDL_Point triangleGaucheTitle[4] = {{titleRect.x, titleRect.y}, {titleRect.x, titleRect.y + titleRect.h - 1}, {titleRect.x - 30, titleRect.y}, {titleRect.x, titleRect.y}};
+            SDL_Point triangleDroiteTitle[4] = {{titleRect.x + titleRect.w, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y + titleRect.h - 1}, {(titleRect.x + titleRect.w) + 30, titleRect.y}, {titleRect.x + titleRect.w, titleRect.y}};
+
+            SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Rouge pour toutes les formes du titre
+            SDL_RenderDrawLines(ren, triangleGaucheTitle, 4);
+            SDL_RenderDrawLines(ren, triangleDroiteTitle, 4);
+            SDL_RenderFillRect(ren, &titleRect);
+
+            // Remplir le triangle gauche
+            for (int y = triangleGaucheTitle[0].y; y <= triangleGaucheTitle[1].y; ++y) {
+                int startX = triangleGaucheTitle[0].x;
+                int endX = startX - (triangleGaucheTitle[1].y - y) * 30 / 50;
+                SDL_RenderDrawLine(ren, endX, y, startX, y);
+            }
+
+            // Remplir le triangle droite
+            for (int y = triangleDroiteTitle[0].y; y <= triangleDroiteTitle[1].y; ++y) {
+                int startX = triangleDroiteTitle[0].x;
+                int endX = startX + (triangleDroiteTitle[1].y - y) * 30 / 50;
+                SDL_RenderDrawLine(ren, startX, y, endX, y);
+            }
+
+            // Centrer le texte du titre par rapport à titleRect
+            int titleTextWidth = titleTextRect.w;
+            int titleTextHeight = titleTextRect.h;
+            int titleTextX = titleRect.x + (titleRect.w - titleTextWidth) / 2;
+            int titleTextY = titleRect.y + (titleRect.h - titleTextHeight) / 2;
+            // Afficher le texte du titre centré
+            titleTextRect = afficherTexte(ren, fontTitle, "Game Of Life", titleTextX, titleTextY, white);
+
+
+            // Calculer les marges pour centrer les rectangles
+            int marginX = (largeurEcran - (3 * 200 + 2 * 50)) / 2;
+            int marginY = (hauteurEcran - (2 * 150 + 1 * 50)) / 2;
+
+            // Afficher les rectangles
+            for (int row = 0; row < 2; ++row)
+            {
+                for (int col = 0; col < 3; ++col)
                 {
-                    //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-                    Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
-                    if (grille.tailleX != 0 && grille.tailleY != 0)
+                    SDL_Rect rect = {marginX + col * (200 + 50), marginY + row * (150 + 50), 200, 150};
+                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Blanc
+                    SDL_RenderDrawRect(ren, &rect);
+
+                    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Noir
+                    SDL_RenderFillRect(ren, &rect); // Remplir les rectangles
+
+                    // Dessiner le nom
+                    SDL_Rect nameRect = afficherNom(ren, font, rect, nomOptions[row * 3 + col], white);
+                    // Dessiner l'image
+                    SDL_Rect imgRect = afficherImage(ren, imagePaths[row * 3 + col], rect);
+                    // Dessiner "plus d'information"
+                    SDL_Rect infoRect = afficherTexte(ren, font, "Plus d'information", rect.x + (rect.w/4+10) / 2, rect.y + 120, white);
+
+                    // Vérifier si on clique sur "plus d'information"
+                    int mouseX, mouseY;
+                    Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
+                    if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
+                        mouseX >= infoRect.x && mouseX <= infoRect.x + infoRect.w &&
+                        mouseY >= infoRect.y && mouseY <= infoRect.y + infoRect.h)
                     {
-                        //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
-                        if (grille.tailleX > 3 && grille.tailleY > 3) {
-                            grille.listePointeursLignes[2][1] = 1;
-                            grille.listePointeursLignes[3][2] = 1;
-                            grille.listePointeursLignes[1][3] = 1;
-                            grille.listePointeursLignes[2][3] = 1;
-                            grille.listePointeursLignes[3][3] = 1;
-                        } else {
-                            fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
-                            runningMenu = 0;
-                        }
-                        if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
+                        //printf("Afficher plus d'information pour l'option %s\n", nomOptions[row * 3 + col]);
+                        if (lancementPlusInformation(ren, fontTitle, font, white, nomOptions[row * 3 + col], descriptionOptions[row * 3 + col]) != 0)
                         {
-                            fprintf(stderr, "Erreur lors du lancement du jeu\n");
+                            fprintf(stderr, "Erreur lors du lancement de plus d'information\n");
                             runningMenu = 0;
                         }
-                        libererGrille(&grille);
-                    } else {
-                        libererGrille(&grille);
                     }
-                    
+                    // Vérifier si on clique sur le nom ou l'image
+                    if ((buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) &&
+                        ((mouseX >= nameRect.x && mouseX <= nameRect.x + nameRect.w &&
+                        mouseY >= nameRect.y && mouseY <= nameRect.y + nameRect.h) ||
+                        (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
+                        mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
+                    {
+                        //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
+                        Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                        if (grille.tailleX != 0 && grille.tailleY != 0)
+                        {
+                            //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
+                            if (grille.tailleX > 3 && grille.tailleY > 3) {
+                                grille.listePointeursLignes[2][1] = 1;
+                                grille.listePointeursLignes[3][2] = 1;
+                                grille.listePointeursLignes[1][3] = 1;
+                                grille.listePointeursLignes[2][3] = 1;
+                                grille.listePointeursLignes[3][3] = 1;
+                            } else {
+                                fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
+                                runningMenu = 0;
+                            }
+                            if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
+                            {
+                                fprintf(stderr, "Erreur lors du lancement du jeu\n");
+                                runningMenu = 0;
+                            }
+                            libererGrille(&grille);
+                        } else {
+                            libererGrille(&grille);
+                        }
+                        
+                    }
                 }
             }
-        }
 
-        // Afficher le rendu
-        SDL_RenderPresent(ren);
+            // Afficher le rendu
+            SDL_RenderPresent(ren);
+        }
     }
 
     // Libération de la mémoire
@@ -349,6 +386,12 @@ int lancementMenu()
 // fonction qui affiche le texte
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color)
 {
+    if (ren == NULL || font == NULL || texte == NULL)
+    {
+        printf("Erreur: paramètre manquant\n");
+        return (SDL_Rect){0, 0, 0, 0};
+    }
+
     // Dessiner le texte
     SDL_Surface *textSurface = TTF_RenderText_Solid(font, texte, color);
     if (textSurface == NULL) {
@@ -359,6 +402,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
     if (textTexture == NULL) {
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        printf("- Impossible d'afficher le texte\n");
         SDL_FreeSurface(textSurface);
         return (SDL_Rect){0, 0, 0, 0};
     }
@@ -383,6 +427,7 @@ SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const cha
     SDL_Texture *nameTexture = SDL_CreateTextureFromSurface(ren, nameSurface);
     if (nameTexture == NULL) {
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        printf("- Impossible d'afficher le nom\n");
         SDL_FreeSurface(nameSurface);
         return (SDL_Rect){0, 0, 0, 0};
     }
@@ -408,6 +453,7 @@ SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect)
     SDL_Texture *imgTexture = SDL_CreateTextureFromSurface(ren, imgSurface);
     if (imgTexture == NULL) {
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        printf("- Impossible d'afficher l'image'\n");
         SDL_FreeSurface(imgSurface);
         return rect;
     }
