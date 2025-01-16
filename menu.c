@@ -336,9 +336,9 @@ int lancementMenu()
                         (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
                         mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                     {
-                        //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
+                        printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
                         Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
-                        if (grille.tailleX != 0 && grille.tailleY != 0)
+                        if (grille.tailleX != 0 || grille.tailleY != 0)
                         {
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
                             if (grille.tailleX > 3 && grille.tailleY > 3) {
@@ -359,6 +359,7 @@ int lancementMenu()
                             libererGrille(&grille);
                         } else {
                             libererGrille(&grille);
+                            printf("Erreur lors du choix de la grille\n");
                         }
                         
                     }
@@ -689,13 +690,15 @@ Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *fo
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
                     runningChoixGrille = 0;
                 } else if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w && // Quand on clique sur le bouton "Retour"
-                    mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h) {
+                           mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h) {
                     runningChoixGrille = 0;
                 } else if (mouseX >= saisieRect.x && mouseX <= saisieRect.x + saisieRect.w && // Quand on clique sur la zone de saisie
                            mouseY >= saisieRect.y && mouseY <= saisieRect.y + saisieRect.h) {
                     lectureTextInput(ren, font, color, saisieRect, inputText, sizeof(inputText));
-                } else if (mouseX >= jouerRect.x && mouseX <= jouerRect.x + jouerRect.w && // Quand on clique sur le bouton "Jouer"
-                    mouseY >= jouerRect.y && mouseY <= jouerRect.y + jouerRect.h) {
+                } else if ((mouseX >= jouerRect.x && mouseX <= jouerRect.x + jouerRect.w && // Quand on clique sur le bouton "Jouer"
+                           mouseY >= jouerRect.y && mouseY <= jouerRect.y + jouerRect.h) ||
+                           (mouseX >= jouerTextRect.x && mouseX <= jouerTextRect.x + jouerTextRect.w &&
+                           mouseY >= jouerTextRect.y && mouseY <= jouerTextRect.y + jouerTextRect.h)) {
                         Grille grille = creationGrille(inputText);
                         runningChoixGrille = 0;
                         //libererGrille(&grille);

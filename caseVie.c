@@ -12,8 +12,16 @@ void VérifierCaseVivante(Grille* grille);
 void VérifierCaseVivante(Grille* grille){
     // Créer une grille temporaire pour stocker les nouvelles valeurs
     int** nouvelleGrille = (int**)malloc((*grille).tailleX * sizeof(int*));
+    if (nouvelleGrille == NULL) {
+        fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < (*grille).tailleX; i++) {
         nouvelleGrille[i] = (int*)malloc((*grille).tailleY * sizeof(int));
+        if (nouvelleGrille[i] == NULL) {
+            fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
+            exit(EXIT_FAILURE);
+        }
     }
 
     for (int i = 0; i < (*grille).tailleX; i++){

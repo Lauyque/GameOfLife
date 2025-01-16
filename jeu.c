@@ -21,12 +21,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
     int tour = 1;
-    const int DELAY = 200; // Délai en millisecondes entre chaque tour
-
-    SDL_Rect tourTextRect; // Initialisation de la taille du texte pour le premier tour
-    //tourTextRect.w = 0;
-    //tourTextRect.h = 0;
-    SDL_Rect retourRect; // Initialisation de la taille du texte pour le bouton "Quitter"
+    int DELAY = 200; // Délai en millisecondes entre chaque tour
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
@@ -113,6 +108,23 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Augmenter le nombre de tour
         tour++;
 
+        // Afficher la vitesse en haut à droite sous le nombre de tour
+        SDL_Rect vitesseRect = afficherTexte(ren, font, "Vitesse", largeurEcran - 100, 60, color);
+        char delayText[10];
+        sprintf(delayText, "%d", DELAY);
+        SDL_Rect delayRect = afficherTexte(ren, font, delayText, largeurEcran - 100, 80, color);
+        // bouton pour augmenter la vitesse
+        SDL_Rect boutonPlusRect = {largeurEcran - 50, 100, 20, 20};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &boutonPlusRect); // Dessiner le rectangle
+        SDL_Rect boutonPlusTextRect = afficherTexte(ren, font, "+", largeurEcran - 45, 100, color);
+        // bouton pour diminuer la vitesse
+        SDL_Rect boutonMoinsRect = {largeurEcran - 50, 130, 20, 20};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &boutonMoinsRect); // Dessiner le rectangle
+        SDL_Rect boutonMoinsTextRect = afficherTexte(ren, font, "-", largeurEcran - 45, 130, color);
+
+
         // Mettre un bouton pause à droite
         SDL_Rect pauseRect = afficherTexte(ren, font, "Pause", largeurEcran - 100, hauteurEcran - 50, color);
 
@@ -121,7 +133,6 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
         // Définir le rectangle du bouton quitter
         SDL_Rect quitterRect = {largeurEcran / 2 - 50, hauteurEcran - 50, 100, 50}; // Centré en bas
-        // Remplir le rectangle du bouton quitter avec une couleur
         // Rajouter 2 triangle sur les 2 cotés du rectangle
         // Triangle gauche
         SDL_Point triangleGauche[4] = {{quitterRect.x, quitterRect.y}, {quitterRect.x, quitterRect.y + 50}, {quitterRect.x -30, quitterRect.y + 50}, {quitterRect.x, quitterRect.y}};
@@ -170,7 +181,18 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
                     runningJeu = 0;
+                } else if (mouseX >= boutonPlusRect.x && mouseX <= boutonPlusRect.x + boutonPlusRect.w && // Augmentation de la vitesse
+                    mouseY >= boutonPlusRect.y && mouseY <= boutonPlusRect.y + boutonPlusRect.h)
+                {
+                    printf("Plus\n");
+                    DELAY -= 100;
+                } else if (mouseX >= boutonMoinsRect.x && mouseX <= boutonMoinsRect.x + boutonMoinsRect.w && // Diminution de la vitesse
+                    mouseY >= boutonMoinsRect.y && mouseY <= boutonMoinsRect.y + boutonMoinsRect.h)
+                {
+                    printf("Moins\n");
+                    DELAY += 100;
                 }
+
                 // PAUSE
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
                     mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
@@ -199,17 +221,13 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                             {
                                 int mouseX = e.button.x;
                                 int mouseY = e.button.y;
-
-                                // QUITTER
-                                if (mouseX >= retourRect.x && mouseX <= retourRect.x + retourRect.w &&
-                                    mouseY >= retourRect.y && mouseY <= retourRect.y + retourRect.h)
-                                {
+                                if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
+                                    mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
                                     runningJeu = 0;
                                     paused = 0;
                                 }
-
                                 // PAUSE
-                                if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
+                                else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
                                     mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
                                 {
                                     printf("Reprise\n");
