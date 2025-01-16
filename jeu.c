@@ -16,12 +16,15 @@
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille);
 void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
+int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect);
 
 // Jeu
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
     int tour = 1;
     int DELAY = 200; // Délai en millisecondes entre chaque tour
+    int DELAY_MAX = 400; // Délai maximum en millisecondes entre chaque tour
+    int DELAY_VISIBLE = 2; // Délai en millisecondes pour afficher les changements
 
     // Vérification de la bonne allocution de la mémoire
     if ((*grille).listePointeursLignes == NULL) {
@@ -82,23 +85,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10 + 1, hauteurEcran / 2 - (*grille).tailleY * 10 + 1, (*grille).tailleX * 20 + 0, (*grille).tailleY * 20 + 0}; // +1 pour afficher un contour
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
         SDL_RenderDrawRect(ren, &grilleRect); // Dessiner le rectangle
-
         // Afficher la grille dans le rectangle
         afficherGrilleJeu(grille, ren, font, color);
-
-        // transformer un int en char
-        char tourText[100];
-        sprintf(tourText, "Tour : %d", tour); // Utiliser %d pour les entiers
-
-        // Obtenir les dimensions du texte
-        SDL_Rect tourTextRect = afficherTexte(ren, font, tourText, largeurEcran - 90, 25, color);
-
-        // rectangle à la toute droite de l'écran pour afficher le nombre de tours
-        SDL_Rect tourRect = {largeurEcran - 100, 20, tourTextRect.w + 20, tourTextRect.h + 10};
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
-        SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
-
-        printf("width : %d, height : %d\n", tourTextRect.w, tourTextRect.h);
 
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
@@ -108,25 +96,50 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Augmenter le nombre de tour
         tour++;
 
+        // Menu à droite
+        SDL_Rect menuDroiteRect = {largeurEcran - 200, 0, 200, hauteurEcran};
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur noire
+        SDL_RenderFillRect(ren, &menuDroiteRect); // Dessiner le rectangle
+
+        // Titre menu à droite
+        SDL_Rect menuDroiteTextRect = afficherTexte(ren, fontTitle, "Menu", largeurEcran - 150, 10, color);
+
+        // transformer un int en char
+        char tourText[100];
+        sprintf(tourText, "Tour : %d", tour); // Utiliser %d pour les entiers
+        // Obtenir les dimensions du texte
+        SDL_Rect tourTextRect = afficherTexte(ren, font, tourText, largeurEcran - (menuDroiteRect.w - 20), menuDroiteTextRect.y +100, color);
+        // rectangle à la toute droite de l'écran pour afficher le nombre de tours
+        SDL_Rect tourRect = {tourTextRect.x - 10, tourTextRect.y - 5, tourTextRect.w + 20, tourTextRect.h + 10};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
+
         // Afficher la vitesse en haut à droite sous le nombre de tour
-        SDL_Rect vitesseRect = afficherTexte(ren, font, "Vitesse", largeurEcran - 100, 60, color);
+        SDL_Rect vitesseTextRect = afficherTexte(ren, font, "Vitesse :", largeurEcran - (menuDroiteRect.w - 20), tourRect.y + 60, color);
+        // Transformer un int en char
         char delayText[10];
-        sprintf(delayText, "%d", DELAY);
-        SDL_Rect delayRect = afficherTexte(ren, font, delayText, largeurEcran - 100, 80, color);
-        // bouton pour augmenter la vitesse
-        SDL_Rect boutonPlusRect = {largeurEcran - 50, 100, 20, 20};
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        sprintf(delayText, "%d", DELAY_VISIBLE);
+        SDL_Rect delayRect = afficherTexte(ren, font, delayText,largeurEcran - (vitesseTextRect.y - vitesseTextRect.w/2 - 15), vitesseTextRect.y, color);
+        // Rectangle pour tout le compartiment de la vitesse
+        SDL_Rect vitesseRect = {vitesseTextRect.x - 10, vitesseTextRect.y - 5, vitesseTextRect.w + delayRect.w + 25, vitesseTextRect.h + 10};
+        SDL_RenderDrawRect(ren, &vitesseRect); // Dessiner le rectangle
+        // bouton pour augmenter la vitesse sous l'affichage de la vitesse
+        SDL_Rect boutonPlusTextRect = afficherTexte(ren, font, "+ 1", largeurEcran - (menuDroiteRect.w - 20), vitesseRect.y + 50, color);
+        SDL_Rect boutonPlusRect = {boutonPlusTextRect.x - 10, boutonPlusTextRect.y - 5, boutonPlusTextRect.w + 20, boutonPlusTextRect.h + 10};
+        SDL_SetRenderDrawColor(ren, 100, 100, 100, 255);
         SDL_RenderDrawRect(ren, &boutonPlusRect); // Dessiner le rectangle
-        SDL_Rect boutonPlusTextRect = afficherTexte(ren, font, "+", largeurEcran - 45, 100, color);
-        // bouton pour diminuer la vitesse
-        SDL_Rect boutonMoinsRect = {largeurEcran - 50, 130, 20, 20};
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
+        // bouton pour diminuer la vitesse à droite du bouton pour augmenter la vitesse
+        SDL_Rect boutonMoinsTextRect = afficherTexte(ren, font, "- 1", vitesseRect.x + vitesseRect.w - (boutonPlusRect.w - 15), boutonPlusTextRect.y, color);
+        SDL_Rect boutonMoinsRect = {boutonMoinsTextRect.x  - 10, boutonMoinsTextRect.y - 5, boutonMoinsTextRect.w + 20, boutonMoinsTextRect.h + 10};
         SDL_RenderDrawRect(ren, &boutonMoinsRect); // Dessiner le rectangle
-        SDL_Rect boutonMoinsTextRect = afficherTexte(ren, font, "-", largeurEcran - 45, 130, color);
 
 
         // Mettre un bouton pause à droite
-        SDL_Rect pauseRect = afficherTexte(ren, font, "Pause", largeurEcran - 100, hauteurEcran - 50, color);
+        SDL_Rect pauseRect = afficherTexte(ren, font, "Pause", menuDroiteRect.x + 20, hauteurEcran - 50, color);
+        // Rectangle pour le bouton pause
+        SDL_Rect pauseTextRect = {pauseRect.x - 10, pauseRect.y - 5, pauseRect.w + 20, pauseRect.h + 10};
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        SDL_RenderDrawRect(ren, &pauseTextRect); // Dessiner le rectangle
 
 
         // Affichage du bouton quitter
@@ -184,58 +197,24 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 } else if (mouseX >= boutonPlusRect.x && mouseX <= boutonPlusRect.x + boutonPlusRect.w && // Augmentation de la vitesse
                     mouseY >= boutonPlusRect.y && mouseY <= boutonPlusRect.y + boutonPlusRect.h)
                 {
-                    printf("Plus\n");
-                    DELAY -= 100;
+                    if (DELAY != 0) {
+                        DELAY -= 100;
+                        DELAY_VISIBLE += 1;
+                    }
                 } else if (mouseX >= boutonMoinsRect.x && mouseX <= boutonMoinsRect.x + boutonMoinsRect.w && // Diminution de la vitesse
                     mouseY >= boutonMoinsRect.y && mouseY <= boutonMoinsRect.y + boutonMoinsRect.h)
                 {
-                    printf("Moins\n");
-                    DELAY += 100;
+                    if (DELAY != DELAY_MAX) {
+                        DELAY += 100;
+                        DELAY_VISIBLE -= 1;
+                    }
                 }
 
                 // PAUSE
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
                     mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
                 {
-                    printf("Pause\n");
-                    int paused = 1;
-                    while (paused){
-                        // Griser l'écran
-                        SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
-
-                        // Afficher en grand le message de pause
-                        SDL_Rect pauseMessageRect = afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
-
-                        // Appliquer les modifications
-                        SDL_RenderPresent(ren);
-
-                        SDL_Event e;
-                        while (SDL_PollEvent(&e))
-                        {
-                            if (e.type == SDL_QUIT)
-                            {
-                                runningJeu = 0;
-                                paused = 0;
-                            }
-                            else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
-                            {
-                                int mouseX = e.button.x;
-                                int mouseY = e.button.y;
-                                if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
-                                    mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
-                                    runningJeu = 0;
-                                    paused = 0;
-                                }
-                                // PAUSE
-                                else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
-                                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
-                                {
-                                    printf("Reprise\n");
-                                    paused = 0;
-                                }
-                            }
-                        }
-                    }
+                    runningJeu = pause(ren, fontTitle, font, color, pauseRect, quitterRect);
                 }
             }
         }
@@ -288,4 +267,55 @@ void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Co
             SDL_RenderDrawRect(ren, &caseRect);
         }
     }
+}
+
+
+// Fonction qui affiche la pause
+int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect){
+    int paused = 1;
+    int runningJeu = 1;
+
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    int largeurEcran = DM.w;
+    int hauteurEcran = DM.h;
+
+    while (paused){
+        // Griser l'écran
+        SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
+
+        // Afficher en grand le message de pause
+        SDL_Rect pauseMessageRect = afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
+
+        // Appliquer les modifications
+        SDL_RenderPresent(ren);
+
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
+        {
+            if (e.type == SDL_QUIT)
+            {
+                runningJeu = 0;
+                paused = 0;
+            }
+            else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+            {
+                int mouseX = e.button.x;
+                int mouseY = e.button.y;
+                if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
+                    mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
+                    runningJeu = 0;
+                    paused = 0;
+                }
+                // PAUSE
+                else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
+                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
+                {
+                    printf("Reprise\n");
+                    paused = 0;
+                }
+            }
+        }
+    }
+    return runningJeu;
 }
