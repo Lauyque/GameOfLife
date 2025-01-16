@@ -119,7 +119,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Transformer un int en char
         char delayText[10];
         sprintf(delayText, "%d", DELAY_VISIBLE);
-        SDL_Rect delayRect = afficherTexte(ren, font, delayText,largeurEcran - (vitesseTextRect.y - vitesseTextRect.w/2 - 15), vitesseTextRect.y, color);
+        SDL_Rect delayRect = afficherTexte(ren, font, delayText,largeurEcran - (vitesseTextRect.y - vitesseTextRect.w/2 - 25), vitesseTextRect.y, color);
         // Rectangle pour tout le compartiment de la vitesse
         SDL_Rect vitesseRect = {vitesseTextRect.x - 10, vitesseTextRect.y - 5, vitesseTextRect.w + delayRect.w + 25, vitesseTextRect.h + 10};
         SDL_RenderDrawRect(ren, &vitesseRect); // Dessiner le rectangle
@@ -281,8 +281,9 @@ int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color colo
     int hauteurEcran = DM.h;
 
     while (paused){
-        // Griser l'écran
-        SDL_SetRenderDrawColor(ren, 128, 128, 128, 255);
+        // Griser l'écran avec une opacity réduite
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 200);
+        //SDL_RenderClear(ren);
 
         // Afficher en grand le message de pause
         SDL_Rect pauseMessageRect = afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
