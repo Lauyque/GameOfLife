@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <string.h>
 #include <time.h>
+#include "sauvegarde.c"
 
 //Mes propres fichiers
 //#include "grille.c"

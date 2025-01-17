@@ -4,6 +4,9 @@
 #include <string.h>
 #include <time.h>
 
+void sauvegarder_grille(int** grille, int largeur, int hauteur, const char* nom_fichier);
+void charger_grille(int** grille, int largeur, int hauteur, const char* nom_fichier);
+
 void sauvegarder_grille(int** grille, int largeur, int hauteur, const char* nom_fichier) {
     FILE* fichier = fopen(nom_fichier, "w");
     if (fichier == NULL) {

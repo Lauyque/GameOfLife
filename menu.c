@@ -172,7 +172,7 @@ int lancementMenu()
 
 
     // Afficher une image de fond avec sdl2 image
-    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu2.png");
+    SDL_Surface *background = IMG_Load("assets/images/BG.png");
     if (background == NULL)
     {
         printf("IMG_Load Error: %s\n", IMG_GetError());
@@ -387,6 +387,10 @@ int lancementMenu()
                         // Vérification de la grille
                         if (grille.tailleX != 0 || grille.tailleY != 0)
                         {
+                            // Arrêter la musique actuelle
+                            Mix_HaltMusic();
+                            Mix_FreeMusic(music);
+                            
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
                             // Condition si le choix est "aleatoire"
                             if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0)
