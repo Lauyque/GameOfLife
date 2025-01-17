@@ -90,9 +90,9 @@ int lancementMenu()
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
-        "assets/images/aleatoire.bmp",
-        "assets/images/Glider.bmp",
-        "assets/images/Glider.bmp"};
+        "assets/images/Aleatoire.bmp",
+        "assets/images/Sandbox.bmp",
+        "assets/images/Personnalise.bmp"};
 
 
     // Création de la fenêtre
