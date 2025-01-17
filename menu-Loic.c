@@ -8,7 +8,6 @@
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_ttf.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
-#include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
 // #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
@@ -25,7 +24,7 @@ SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
 SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
 
 int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
-GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
+Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
 void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
 // IDEE d'avancement.
@@ -56,36 +55,6 @@ int lancementMenu()
         SDL_Quit();
         return 1;
     }
-     // Initialisation de SDL_mixer
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-    {
-        printf("Mix_OpenAudio Error: %s\n", Mix_GetError());
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Charger la musique
-    Mix_Music *music = Mix_LoadMUS("assets/musics/Music1.mp3");
-    if (!music)
-    {
-        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
-        //Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Jouer la musique
-    if (Mix_PlayMusic(music, -1) == -1)
-    {
-        printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
-        Mix_FreeMusic(music);
-        Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
 
     // Récupérer la taille de l'écran
     SDL_DisplayMode DM;
@@ -102,18 +71,18 @@ int lancementMenu()
         "Glider",
         "2",
         "3",
-        "Aléatoire",
-        "SandBox",
-        "Personnalisé"};
+        "4",
+        "5",
+        "6"};
 
     // Description des options
     const char *descriptionOptions[6] = {
         "Le 'Glider' est le nom donner pour le plus petit model de cases de vie qui avance à l'infini",
         "coucou2",
         "coucou3",
-        "Permet de commencer avec une grille aléatoire",
-        "Permet de créer sa propre grille",
-        "Permet d'importer un fichier personnalisé"
+        "coucou4",
+        "coucou5",
+        "coucou6",
     };
 
     // Chemins des images
@@ -121,9 +90,9 @@ int lancementMenu()
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
-        "assets/images/Aleatoire.bmp",
-        "assets/images/Sandbox.bmp",
-        "assets/images/Personnalise.bmp"};
+        "assets/images/Glider.bmp",
+        "assets/images/Glider.bmp",
+        "assets/images/Glider.bmp"};
 
 
     // Création de la fenêtre
@@ -172,7 +141,7 @@ int lancementMenu()
 
 
     // Afficher une image de fond avec sdl2 image
-    SDL_Surface *background = IMG_Load("assets/images/BG.png");
+    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu2.png");
     if (background == NULL)
     {
         printf("IMG_Load Error: %s\n", IMG_GetError());
@@ -367,62 +336,29 @@ int lancementMenu()
                         (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
                         mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                     {
-                        //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-                        // Si le choix est personnalisé, pas besoin de choisir une grille
-                        if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0)
+                        printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
+                        Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                        if (grille.tailleX != 0 || grille.tailleY != 0)
                         {
-                            //Grille grille = lancementSave(ren, fontTitle, font, white, nomOptions[row * 3 + col]); // Lancement de la partie sauvegardée
-                            //if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
-                            //{
-                                //runningMenu = 0;
-                            //}
-                            //libererGrille(&grille);
-                            // Sortir de la de la gestion du clic
-                            break;
-                        }
-
-                        // Pour toutes les autres options, on doit choisir une grille
-                        GrilleChaine* grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
-
-                        // Vérification de la grille
-                        if (grille->dernier->tailleX != 0 || grille->dernier->tailleY != 0)
-                        {
-                            // Arrêter la musique actuelle
-                            Mix_HaltMusic();
-                            Mix_FreeMusic(music);
-                            
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
-                            // Condition si le choix est "aleatoire"
-                            if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0)
-                            {
-                                srand(time(NULL));
-                                for (int i = 0; i < grille->dernier->tailleX; i++)
-                                {
-                                    for (int j = 0; j < grille->dernier->tailleY; j++)
-                                    {
-                                        grille->dernier->listePointeursLignes[i][j] = rand() % 2;
-                                    }
-                                }
-                            } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
-                                //void lancementSandBox(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, Grille *grille); // A faire si on a le temps
-                            } else if (grille->dernier->tailleX > 3 && grille->dernier->tailleY > 3) {
-                                grille->dernier->listePointeursLignes[2][1] = 1;
-                                grille->dernier->listePointeursLignes[3][2] = 1;
-                                grille->dernier->listePointeursLignes[1][3] = 1;
-                                grille->dernier->listePointeursLignes[2][3] = 1;
-                                grille->dernier->listePointeursLignes[3][3] = 1;
+                            if (grille.tailleX > 3 && grille.tailleY > 3) {
+                                grille.listePointeursLignes[2][1] = 1;
+                                grille.listePointeursLignes[3][2] = 1;
+                                grille.listePointeursLignes[1][3] = 1;
+                                grille.listePointeursLignes[2][3] = 1;
+                                grille.listePointeursLignes[3][3] = 1;
                             } else {
                                 fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
                                 runningMenu = 0;
                             }
-                            if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], grille) != 0)
+                            if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
                             {
                                 fprintf(stderr, "Erreur lors du lancement du jeu\n");
                                 runningMenu = 0;
                             }
-                            libererGrilleChaine(grille);
+                            libererGrille(&grille);
                         } else {
-                            libererGrilleChaine(grille);
+                            libererGrille(&grille);
                             printf("Erreur lors du choix de la grille\n");
                         }
                         
@@ -438,8 +374,6 @@ int lancementMenu()
     // Libération de la mémoire
     SDL_DestroyTexture(backgroundTexture);
     IMG_Quit();
-    Mix_CloseAudio();
-    Mix_FreeMusic(music);
     TTF_CloseFont(font);
     TTF_CloseFont(fontTitle);
     TTF_Quit();
@@ -460,7 +394,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
     }
 
     // Dessiner le texte
-    SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, texte, color);
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, texte, color);
     if (textSurface == NULL) {
         // Normal puisque le texte est vide
         //printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
@@ -486,7 +420,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color)
 {
     // Dessiner le nom
-    SDL_Surface *nameSurface = TTF_RenderUTF8_Solid(font, nom, color);
+    SDL_Surface *nameSurface = TTF_RenderText_Solid(font, nom, color);
     if (nameSurface == NULL) {
         printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
         return (SDL_Rect){0, 0, 0, 0};
@@ -605,7 +539,7 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
 
 
 // Fonction qui affiche le choix de la taille de la grille
-GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
+Grille lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
     int runningChoixGrille = 1;
     char inputText[100] = "";
 
@@ -765,20 +699,9 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                            mouseY >= jouerRect.y && mouseY <= jouerRect.y + jouerRect.h) ||
                            (mouseX >= jouerTextRect.x && mouseX <= jouerTextRect.x + jouerTextRect.w &&
                            mouseY >= jouerTextRect.y && mouseY <= jouerTextRect.y + jouerTextRect.h)) {
-
-                        // Transformer un char en int
-                        char inputSauv[100];
-                        strcpy(inputSauv, inputText);
-                        char *token = strtok(inputText, "x"); // On découpe la chaine de caractère avec un espace
-                        int largeur = atoi(token); // On convertit le premier élément en int
-                        token = strtok(NULL, " "); // On passe au prochain élément
-                        int hauteur = atoi(token); // On convertit le deuxième élément en int
-                        // réassignation de la bonna valeur à la variable input
-                        strcpy(inputText, inputSauv);
-
-                        GrilleChaine* grille = creerGrilleChaine(largeur, hauteur);
+                        Grille grille = creationGrille(inputText);
                         runningChoixGrille = 0;
-                        //libererGrilleChaine(grille);
+                        //libererGrille(&grille);
                         return grille;
                 } else if (mouseX >= bouton1Rect.x && mouseX <= bouton1Rect.x + bouton1Rect.w && // Quand on clique sur le bouton "10*10"
                            mouseY >= bouton1Rect.y && mouseY <= bouton1Rect.y + bouton1Rect.h) {
@@ -788,7 +711,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '1';
                     inputText[4] = '0';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 } else if (mouseX >= bouton2Rect.x && mouseX <= bouton2Rect.x + bouton2Rect.w && // Quand on clique sur le bouton "15*15"
                            mouseY >= bouton2Rect.y && mouseY <= bouton2Rect.y + bouton2Rect.h) {
                     inputText[0] = '2';
@@ -797,7 +720,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '2';
                     inputText[4] = '0';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 } else if (mouseX >= bouton3Rect.x && mouseX <= bouton3Rect.x + bouton3Rect.w && // Quand on clique sur le bouton "25*25"
                            mouseY >= bouton3Rect.y && mouseY <= bouton3Rect.y + bouton3Rect.h) {
                     inputText[0] = '2';
@@ -806,7 +729,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '2';
                     inputText[4] = '5';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 } else if (mouseX >= bouton4Rect.x && mouseX <= bouton4Rect.x + bouton4Rect.w && // Quand on clique sur le bouton "50*50"
                            mouseY >= bouton4Rect.y && mouseY <= bouton4Rect.y + bouton4Rect.h) {
                     inputText[0] = '8';
@@ -815,7 +738,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '4';
                     inputText[4] = '0';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 } else if (mouseX >= bouton5Rect.x && mouseX <= bouton5Rect.x + bouton5Rect.w && // Quand on clique sur le bouton "20*20"
                            mouseY >= bouton5Rect.y && mouseY <= bouton5Rect.y + bouton5Rect.h) {
                     inputText[0] = '1';
@@ -824,7 +747,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '1';
                     inputText[4] = '5';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 } else if (mouseX >= bouton6Rect.x && mouseX <= bouton6Rect.x + bouton6Rect.w && // Quand on clique sur le bouton "25*25"
                            mouseY >= bouton6Rect.y && mouseY <= bouton6Rect.y + bouton6Rect.h) {
                     inputText[0] = '5';
@@ -833,7 +756,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                     inputText[3] = '5';
                     inputText[4] = '0';
                     //Grille grille = creationGrille(inputText);
-                    //libererGrilleChaine(grille);
+                    //libererGrille(&grille);
                 }
             }
 
@@ -843,8 +766,8 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
         SDL_RenderPresent(ren);
     }
 
-    // Si une erreur survient ou si l'utilisateur annule le choix de la grille
-    GrilleChaine* grille = creerGrilleChaine(0, 0);
+    // Si une erreur survient
+    Grille grille = {0, 0, NULL};
     return grille;
 }
 

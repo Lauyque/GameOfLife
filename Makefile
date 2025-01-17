@@ -55,7 +55,7 @@ run: $(BUILD_DIR)/$(TARGET)
 
 # Règle pour nettoyer les fichiers générés
 clean:
-	del /Q $(BUILD_DIR)\*.o $(BUILD_DIR)\$(TARGET).exe $(BUILD_DIR)\SDL2.dll
+	del /Q $(BUILD_DIR)\*.o $(BUILD_DIR)\$(TARGET).exe $(BUILD_DIR)\SDL2.dll $(BUILD_DIR)\SDL2_image.dll $(BUILD_DIR)\SDL2_ttf.dll $(BUILD_DIR)\SDL2_mixer.dll
 
 # Règle pour compiler et exécuter le programme
 build_and_run: clean copy_dll all run

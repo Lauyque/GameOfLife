@@ -7,34 +7,37 @@
 //#include "grille.h"
 
 // PROTOTYPE
-void VérifierCaseVivante(Grille* grille);
+void vérifierCaseVivante(GrilleChaine* grille);
 
-void VérifierCaseVivante(Grille* grille){
+void vérifierCaseVivante(GrilleChaine* grille){
+
+    // Création de la nouvelle grille
+    ajoutGrilleChaine(grille);
     // Créer une grille temporaire pour stocker les nouvelles valeurs
-    int** nouvelleGrille = (int**)malloc((*grille).tailleX * sizeof(int*));
-    if (nouvelleGrille == NULL) {
-        fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < (*grille).tailleX; i++) {
-        nouvelleGrille[i] = (int*)malloc((*grille).tailleY * sizeof(int));
-        if (nouvelleGrille[i] == NULL) {
-            fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
-            exit(EXIT_FAILURE);
-        }
-    }
+    //int** nouvelleGrille = (int**)malloc(grille->dernier->tailleX * sizeof(int*));
+    //if (nouvelleGrille == NULL) {
+        //fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
+        //exit(EXIT_FAILURE);
+    //}
+    //for (int i = 0; i < grille->dernier->tailleX; i++) {
+        //nouvelleGrille[i] = (int*)malloc(grille->dernier->tailleY * sizeof(int));
+        //if (nouvelleGrille[i] == NULL) {
+            //fprintf(stderr, "Erreur d'allocation de mémoire pour la nouvelle grille\n");
+            //exit(EXIT_FAILURE);
+        //}
+    //}
 
-    for (int i = 0; i < (*grille).tailleX; i++){
-        for (int j = 0; j < (*grille).tailleY; j++){
+    for (int i = 0; i < grille->dernier->precedent->tailleX; i++){
+        for (int j = 0; j < grille->dernier->precedent->tailleY; j++){
 
+            // Permet de connaitre le nombre de case vivante autour de nous
             int nbVoisins = 0;
-            //printf("La case X= %d, Y= %d est vivante\n", i, j);
 
-            // Vérification des cases autour
+            // Vérification des cases autours en passant pas la dernière grille puis la precedente ce qui nous mène à la dernière grille calculé
             for (int k = i-1; k <= i+1; k++){
                 for (int l = j-1; l <= j+1; l++){
-                    if (k >= 0 && k < (*grille).tailleX && l >= 0 && l < (*grille).tailleY){
-                        if ((*grille).listePointeursLignes[k][l] == 1){
+                    if (k >= 0 && k < grille->dernier->precedent->tailleX && l >= 0 && l < grille->dernier->precedent->tailleY){
+                        if (grille->dernier->precedent->listePointeursLignes[k][l] == 1){
                             //printf("*La case X= %d, Y= %d est vivante\n", k, l);
                             if (k != i || l != j){
                                 nbVoisins++;
@@ -43,30 +46,31 @@ void VérifierCaseVivante(Grille* grille){
                     }
                 }
             }
-            //printf("Nombre de voisins : %d\n", nbVoisins);
-            // Appliquer les règles du jeu de la vie et stocker le résultat dans la grille temporaire
-            if ((nbVoisins == 2 || nbVoisins == 3) && (*grille).listePointeursLignes[i][j] == 1){
-                nouvelleGrille[i][j] = 1;
+            // Appliquer les règles du jeu de la vie et stocker le résultat dans la nouvelle grille (donc la dernière)
+            if ((nbVoisins == 2 || nbVoisins == 3) && grille->dernier->precedent->listePointeursLignes[i][j] == 1){
+                grille->dernier->listePointeursLignes[i][j] = 1;
             } else if (nbVoisins == 3){
-                nouvelleGrille[i][j] = 1;
+                grille->dernier->listePointeursLignes[i][j] = 1;
             } else {
-                nouvelleGrille[i][j] = 0;
+                grille->dernier->listePointeursLignes[i][j] = 0;
             }
         }
     }
 
+
+
     // Copier la grille temporaire dans la grille principale
-    for (int i = 0; i < (*grille).tailleX; i++){
-        for (int j = 0; j < (*grille).tailleY; j++){
-            (*grille).listePointeursLignes[i][j] = nouvelleGrille[i][j];
-        }
-    }
+    //for (int i = 0; i < grille->dernier->precedent->tailleX; i++){
+        //for (int j = 0; j < grille->dernier->precedent->tailleY; j++){
+            //grille->dernier->listePointeursLignes[i][j] = nouvelleGrille[i][j];
+        //}
+    //}
 
     // Libérer la mémoire de la grille temporaire
-    for (int i = 0; i < (*grille).tailleX; i++) {
-        free(nouvelleGrille[i]);
-    }
-    free(nouvelleGrille);
+    //for (int i = 0; i < grille->dernier->tailleX; i++) {
+        //free(nouvelleGrille[i]);
+    //}
+    //free(nouvelleGrille);
 }
 
 // Différentes possibilités pour la fonction VérifierCaseVivante

@@ -8,59 +8,26 @@
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_ttf.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
-#include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
 // Mes propres fichiers
 //#include "grille.h"
 
 // PROTOTYPES
-int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille);
-void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
+int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille);
+void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
 int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect);
 
 // Jeu
-int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille){
+int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, Grille* grille){
     int runningJeu = 1;
     int tour = 1;
     int DELAY = 200; // Délai en millisecondes entre chaque tour
     int DELAY_MAX = 400; // Délai maximum en millisecondes entre chaque tour
     int DELAY_VISIBLE = 2; // Délai en millisecondes pour afficher les changements
 
-    // Initialisation de SDL_mixer
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-    {
-        printf("Mix_OpenAudio Error: %s\n", Mix_GetError());
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Charger la musique
-    Mix_Music *music = Mix_LoadMUS("assets/musics/Music_Jeu.mp3");
-    if (!music)
-    {
-        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
-        //Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Jouer la musique
-    if (Mix_PlayMusic(music, -1) == -1)
-    {
-        printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
-        Mix_FreeMusic(music);
-        Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-
     // Vérification de la bonne allocution de la mémoire
-    if (grille->dernier->listePointeursLignes == NULL) {
+    if ((*grille).listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
         exit(EXIT_FAILURE);
     }
@@ -115,7 +82,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
 
         // Faire un rectangle au centre de l'écran pour la grille adapter a la taille de la grille
-        SDL_Rect grilleRect = {largeurEcran / 2 - grille->dernier->tailleX * 10 + 1, hauteurEcran / 2 - grille->dernier->tailleY * 10 + 1, grille->dernier->tailleX * 20 + 0, grille->dernier->tailleY * 20 + 0}; // +1 pour afficher un contour
+        SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10 + 1, hauteurEcran / 2 - (*grille).tailleY * 10 + 1, (*grille).tailleX * 20 + 0, (*grille).tailleY * 20 + 0}; // +1 pour afficher un contour
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
         SDL_RenderDrawRect(ren, &grilleRect); // Dessiner le rectangle
         // Afficher la grille dans le rectangle
@@ -124,7 +91,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Gestion du temps entre les tours
         // Si on veut mettre un temps d'attente entre chaque tour
         // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
-        vérifierCaseVivante(grille);
+        VérifierCaseVivante(grille);
 
         // Augmenter le nombre de tour
         tour++;
@@ -260,19 +227,16 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
     }
     
     // Suppression de la grille
-    libererGrilleChaine(grille);
-
-    Mix_CloseAudio();
-    Mix_FreeMusic(music);
+    libererGrille(grille);
 
     return 0;
 }
 
 // Fonction pour afficher la grille dans le jeu
-void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
+void afficherGrilleJeu(Grille* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
 
     // Vérification de la bonne allocution de la mémoire
-    if (grille->dernier->listePointeursLignes == NULL) {
+    if ((*grille).listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
         exit(EXIT_FAILURE);
     }
@@ -282,16 +246,16 @@ void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, 
     int largeurEcran = DM.w;
     int hauteurEcran = DM.h;
 
-    SDL_Rect grilleRect = {largeurEcran / 2 - grille->dernier->tailleX * 10, hauteurEcran / 2 - grille->dernier->tailleY * 10, grille->dernier->tailleX * 20, grille->dernier->tailleY * 20};
+    SDL_Rect grilleRect = {largeurEcran / 2 - (*grille).tailleX * 10, hauteurEcran / 2 - (*grille).tailleY * 10, (*grille).tailleX * 20, (*grille).tailleY * 20};
 
-    for (int i = 0; i < grille->dernier->tailleX; i++){
-        for (int j = 0; j < grille->dernier->tailleY; j++){
+    for (int i = 0; i < (*grille).tailleX; i++){
+        for (int j = 0; j < (*grille).tailleY; j++){
             SDL_Rect caseRect = {grilleRect.x + i * 20, grilleRect.y + j * 20, 20, 20};
-            if (grille->dernier->listePointeursLignes[i][j] == 1){
+            if ((*grille).listePointeursLignes[i][j] == 1){
                 // Afficher un carré plein
                 SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
                 SDL_RenderFillRect(ren, &caseRect);
-            } else if (grille->dernier->listePointeursLignes[i][j] == 0){
+            } else if ((*grille).listePointeursLignes[i][j] == 0){
                 // Afficher un carré gris vide
                 SDL_SetRenderDrawColor(ren, 128, 128, 128, 255); // Couleur grise
                 SDL_RenderFillRect(ren, &caseRect);
