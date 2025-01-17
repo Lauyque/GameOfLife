@@ -71,18 +71,18 @@ int lancementMenu()
         "Glider",
         "2",
         "3",
-        "4",
-        "5",
-        "6"};
+        "Aléatoire",
+        "SandBox",
+        "Personnalisé"};
 
     // Description des options
     const char *descriptionOptions[6] = {
         "Le 'Glider' est le nom donner pour le plus petit model de cases de vie qui avance à l'infini",
         "coucou2",
         "coucou3",
-        "coucou4",
-        "coucou5",
-        "coucou6",
+        "Permet de commencer avec une grille aléatoire",
+        "Permet de créer sa propre grille",
+        "Permet d'importer un fichier personnalisé"
     };
 
     // Chemins des images
@@ -90,7 +90,7 @@ int lancementMenu()
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp",
-        "assets/images/Glider.bmp",
+        "assets/images/aleatoire.bmp",
         "assets/images/Glider.bmp",
         "assets/images/Glider.bmp"};
 
@@ -337,11 +337,31 @@ int lancementMenu()
                         mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                     {
                         printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-                        Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+
+                        // Si le choix est personnalisé, pas besoin de choisir une grille
+                        if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0)
+                        {
+                            //Grille grille = lancementSave(ren, fontTitle, font, white, nomOptions[row * 3 + col]); // Lancement de la partie sauvegardée
+                        } else {
+                            Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                        }
+
+                        // Vérification de la grille
                         if (grille.tailleX != 0 || grille.tailleY != 0)
                         {
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
-                            if (grille.tailleX > 3 && grille.tailleY > 3) {
+                            // Condition si le choix est "aleatoire"
+                            if (strcmp(nomOptions[row * 3 + col], "Aléatoire") == 0)
+                            {
+                                srand(time(NULL));
+                                for (int i = 0; i < grille.tailleX; i++)
+                                {
+                                    for (int j = 0; j < grille.tailleY; j++)
+                                    {
+                                        grille.listePointeursLignes[i][j] = rand() % 2;
+                                    }
+                                }
+                            } else if (grille.tailleX > 3 && grille.tailleY > 3) {
                                 grille.listePointeursLignes[2][1] = 1;
                                 grille.listePointeursLignes[3][2] = 1;
                                 grille.listePointeursLignes[1][3] = 1;
