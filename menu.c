@@ -423,7 +423,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
     }
 
     // Dessiner le texte
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, texte, color);
+    SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, texte, color);
     if (textSurface == NULL) {
         // Normal puisque le texte est vide
         //printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
@@ -449,7 +449,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
 SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color)
 {
     // Dessiner le nom
-    SDL_Surface *nameSurface = TTF_RenderText_Solid(font, nom, color);
+    SDL_Surface *nameSurface = TTF_RenderUTF8_Solid(font, nom, color);
     if (nameSurface == NULL) {
         printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
         return (SDL_Rect){0, 0, 0, 0};
