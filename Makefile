@@ -47,7 +47,7 @@ copy_dll:
 	copy $(SDL2_DIR)\lib\x64\SDL2.dll $(BUILD_DIR)
 	copy $(SDL2_TTF_DIR)\lib\x64\SDL2_ttf.dll $(BUILD_DIR)
 	copy $(SDL2_IMAGES_DIR)\lib\x64\SDL2_image.dll $(BUILD_DIR)
-	copy $(SDL2_MIXER_DIR)\lib\x64\SDL2_image.dll $(BUILD_DIR)
+	copy $(SDL2_MIXER_DIR)\lib\x64\SDL2_mixer.dll $(BUILD_DIR)
 
 # Règle pour exécuter le programme
 run: $(BUILD_DIR)/$(TARGET)
