@@ -270,7 +270,6 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
 // Fonction pour afficher la grille dans le jeu
 void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
-    printf("Lancement afficher grille jeu");
     // Vérification de la bonne allocution de la mémoire
     if (grille->dernier->listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
