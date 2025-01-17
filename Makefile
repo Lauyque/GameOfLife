@@ -12,7 +12,7 @@ SDL2_MIXER_DIR = $(DEP_DIR)\SDL2_MIXER\SDL2_mixer-2.8.0
 CFLAGS = -Wall -Wextra -std=c11 -I$(SDL2_DIR)\include -I$(SDL2_TTF_DIR)\include -I$(SDL2_IMAGES_DIR)\include -I$(SDL2_MIXER_DIR)\include
 
 # Options de liaison
-LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -L$(SDL2_IMAGES_DIR)\lib\x64  -L$(SDL2_MIXER_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image
+LDFLAGS = -L$(SDL2_DIR)\lib\x64 -L$(SDL2_TTF_DIR)\lib\x64 -L$(SDL2_IMAGES_DIR)\lib\x64  -L$(SDL2_MIXER_DIR)\lib\x64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer
 #LDFLAGS = -lmingw32 -lSDL2main -lSDL2
 
 # Nom de l'exécutable
