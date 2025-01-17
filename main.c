@@ -14,6 +14,26 @@ int main(){
     // Définition de utf-8 pour les accents
     setlocale(LC_ALL, "fr_FR.UTF-8");
 
+    //int largeur = 5;
+    //int hauteur = 5;
+    //GrilleChaine* grille = creerGrilleChaine(largeur, hauteur);
+
+    //printf("Grille initiale:\n");
+    // Ajouter des cases de vie
+    //grille->dernier->listePointeursLignes[1][1] = 1;
+    //grille->dernier->listePointeursLignes[1][2] = 1;
+    //grille->dernier->listePointeursLignes[2][1] = 1;
+    //grille->dernier->listePointeursLignes[2][2] = 1;
+    //afficherGrilleChaine(grille);
+
+    //mettreAJourGrilleChaine(grille);
+    //printf("Grille après mise à jour:\n");
+    //grille->dernier->listePointeursLignes[3][3] = 1;
+
+    //afficherGrilleChaine(grille);
+
+    //libererGrilleChaine(grille);
+
     // Déclaration de la grille
     //Grille grille = creationGrille();
     //printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);

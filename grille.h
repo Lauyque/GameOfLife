@@ -22,10 +22,15 @@ struct GrilleChaine
 
 struct GrilleTest
 {
-    int* precedent;
-    int* suivant;
+    struct GrilleTest *precedent;
+    struct GrilleTest *suivant;
     int tailleX;
     int tailleY;
     int** listePointeursLignes;
 };
 
+// Prototypes des fonctions
+GrilleChaine* creerGrilleChaine(int largeur, int hauteur);
+void libererGrilleChaine(GrilleChaine *grille);
+void afficherGrilleChaine(GrilleChaine *grilleChaine);
+void mettreAJourGrilleChaine(GrilleChaine *grille);
