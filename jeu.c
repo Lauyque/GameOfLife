@@ -21,6 +21,7 @@ int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color colo
 
 // Jeu
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille){
+    setlocale(LC_ALL, "fr_FR.UTF-8");
     int runningJeu = 1;
     int tour = 1;
     int DELAY = 200; // Délai en millisecondes entre chaque tour

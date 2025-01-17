@@ -38,6 +38,7 @@ void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Re
 // Fonction qui affiche le menu
 int lancementMenu()
 {
+    setlocale(LC_ALL, "fr_FR.UTF-8");
     // Variable pour la boucle principale
     int runningMenu = 1;
     // Variable pour verifier si la fenetre est minimisé
@@ -269,23 +270,23 @@ int lancementMenu()
             //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
             //SDL_RenderDrawRect(ren, &quitterRect);
 
-            SDL_Event e;
-            while (SDL_PollEvent(&e))
-            {
-                if (e.type == SDL_QUIT)
-                {
-                    runningMenu = 0;
-                } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
-                {
-                    int mouseX = e.button.x;
-                    int mouseY = e.button.y;
-                    if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
-                        mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
-                    {
-                        runningMenu = 0;
-                    }
-                }
-            }
+            // SDL_Event e;
+            // while (SDL_PollEvent(&e))
+            // {
+            //     if (e.type == SDL_QUIT)
+            //     {
+            //         runningMenu = 0;
+            //     } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
+            //     {
+            //         int mouseX = e.button.x;
+            //         int mouseY = e.button.y;
+            //         if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
+            //             mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
+            //         {
+            //             runningMenu = 0;
+            //         }
+            //     }
+            // }
 
             // Afficher le titre
             // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
@@ -420,7 +421,7 @@ int lancementMenu()
                                 fprintf(stderr, "Erreur lors du lancement du jeu\n");
                                 runningMenu = 0;
                             }
-                            libererGrilleChaine(grille);
+                            //libererGrilleChaine(grille);
                         } else {
                             libererGrilleChaine(grille);
                             printf("Erreur lors du choix de la grille\n");
@@ -437,9 +438,13 @@ int lancementMenu()
 
     // Libération de la mémoire
     SDL_DestroyTexture(backgroundTexture);
+    SDL_FreeSurface(background);
     IMG_Quit();
-    Mix_CloseAudio();
-    Mix_FreeMusic(music);
+    // si la musique tourne
+    if (Mix_PlayingMusic()) {
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+    }
     TTF_CloseFont(font);
     TTF_CloseFont(fontTitle);
     TTF_Quit();

@@ -5,7 +5,6 @@
 
 //Mes propres librairies
 #include "grille.h"
-
 // // PROTOTYPE
 // Grille creationGrille(const char *input);
 // //void AfficherGrille(Grille grille);
@@ -122,7 +121,9 @@ GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
 
 
 void ajoutGrilleChaine(GrilleChaine *grille) {
+    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grille || !grille->dernier) {
+        fprintf(stderr, "La grille transferer est vide\n");
         return;
     }
 
@@ -164,13 +165,13 @@ void ajoutGrilleChaine(GrilleChaine *grille) {
 }
 
 void libererGrilleChaine(GrilleChaine *grille){
+    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grille) {
         return;
     }
 
-    Grille *current = grille->premier;
-    while (current != NULL) {
-        Grille *next = current->suivant;
+    while (grille->dernier != NULL) {
+        Grille *current = grille->dernier;
 
         // Libérer la mémoire de la grille actuelle
         for (int i = 0; i < current->tailleY; i++) {
@@ -178,20 +179,22 @@ void libererGrilleChaine(GrilleChaine *grille){
             printf("Libération de la memoire pour la ligne %d du tableau %lld\n", i, grille->taille);
         }
         free(current->listePointeursLignes);
-
-        // Passer à la grille suivante
-        current = next;
+        grille->dernier = current->precedent;
+        free(current);
+        grille->taille -= 1;
     }
 
     grille->premier = NULL;
     grille->dernier = NULL;
     grille->taille = 0;
+    free(grille);
 
     printf("Mémoire libérée pour toutes les grilles de la chaîne\n");
 }
 
 
 void afficherGrilleChaine(GrilleChaine *grilleChaine) {
+    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grilleChaine || !grilleChaine->premier) {
         printf("La chaîne de grilles est vide.\n");
         return;
