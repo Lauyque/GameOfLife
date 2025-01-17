@@ -172,7 +172,7 @@ int lancementMenu()
 
 
     // Afficher une image de fond avec sdl2 image
-    SDL_Surface *background = IMG_Load("assets/images/Proposition_Fond-Ecran-Menu2.png");
+    SDL_Surface *background = IMG_Load("assets/images/BG.png");
     if (background == NULL)
     {
         printf("IMG_Load Error: %s\n", IMG_GetError());
