@@ -26,33 +26,37 @@ void vérifierCaseVivante(GrilleChaine* grille){
             //exit(EXIT_FAILURE);
         //}
     //}
+    //afficherGrilleChaine(grille);
 
-    for (int i = 0; i < grille->dernier->precedent->tailleX; i++){
-        for (int j = 0; j < grille->dernier->precedent->tailleY; j++){
+    if (grille->dernier->precedent != NULL) {
+        for (int i = 0; i < grille->dernier->precedent->tailleY; i++){
+            for (int j = 0; j < grille->dernier->precedent->tailleX; j++){
 
-            // Permet de connaitre le nombre de case vivante autour de nous
-            int nbVoisins = 0;
+                // Permet de connaitre le nombre de case vivante autour de nous
+                int nbVoisins = 0;
 
-            // Vérification des cases autours en passant pas la dernière grille puis la precedente ce qui nous mène à la dernière grille calculé
-            for (int k = i-1; k <= i+1; k++){
-                for (int l = j-1; l <= j+1; l++){
-                    if (k >= 0 && k < grille->dernier->precedent->tailleX && l >= 0 && l < grille->dernier->precedent->tailleY){
-                        if (grille->dernier->precedent->listePointeursLignes[k][l] == 1){
-                            //printf("*La case X= %d, Y= %d est vivante\n", k, l);
-                            if (k != i || l != j){
-                                nbVoisins++;
+                // Vérification des cases autours en passant pas la dernière grille puis la precedente ce qui nous mène à la dernière grille calculé
+                for (int k = i-1; k <= i+1; k++){
+                    for (int l = j-1; l <= j+1; l++){
+                        if (k >= 0 && k < grille->dernier->precedent->tailleY && l >= 0 && l < grille->dernier->precedent->tailleX){
+                            if (grille->dernier->precedent->listePointeursLignes[k][l] == 1){
+                                //printf("*La case X= %d, Y= %d est vivante\n", k, l);
+                                if (k != i || l != j){
+                                    nbVoisins++;
+                                    //printf("- +1 pour %d, %d\n", k,l);
+                                }
                             }
                         }
                     }
                 }
-            }
-            // Appliquer les règles du jeu de la vie et stocker le résultat dans la nouvelle grille (donc la dernière)
-            if ((nbVoisins == 2 || nbVoisins == 3) && grille->dernier->precedent->listePointeursLignes[i][j] == 1){
-                grille->dernier->listePointeursLignes[i][j] = 1;
-            } else if (nbVoisins == 3){
-                grille->dernier->listePointeursLignes[i][j] = 1;
-            } else {
-                grille->dernier->listePointeursLignes[i][j] = 0;
+                // Appliquer les règles du jeu de la vie et stocker le résultat dans la nouvelle grille (donc la dernière)
+                if ((nbVoisins == 2 || nbVoisins == 3) && grille->dernier->precedent->listePointeursLignes[i][j] == 1){
+                    grille->dernier->listePointeursLignes[i][j] = 1;
+                } else if (nbVoisins == 3){
+                    grille->dernier->listePointeursLignes[i][j] = 1;
+                } else {
+                    grille->dernier->listePointeursLignes[i][j] = 0;
+                }
             }
         }
     }

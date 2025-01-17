@@ -394,14 +394,12 @@ int lancementMenu()
                             
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
                             // Condition si le choix est "aleatoire"
-                            if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0)
-                            {
+                            if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0) { // Lancement de l'option aléatoire
                                 srand(time(NULL));
-                                for (int i = 0; i < grille->dernier->tailleX; i++)
-                                {
-                                    for (int j = 0; j < grille->dernier->tailleY; j++)
-                                    {
+                                for (int i = 0; i < grille->dernier->tailleY; i++) {
+                                    for (int j = 0; j < grille->dernier->tailleX; j++) {
                                         grille->dernier->listePointeursLignes[i][j] = rand() % 2;
+                                        //printf("Alléatoire pour la case : x = %d y = %d\n", j,i);
                                     }
                                 }
                             } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
@@ -772,16 +770,20 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
                            mouseY >= jouerTextRect.y && mouseY <= jouerTextRect.y + jouerTextRect.h)) {
 
                         // Transformer un char en int
-                        char inputSauv[100];
-                        strcpy(inputSauv, inputText);
+                        //char inputSauv[100];
+                        //strcpy(inputSauv, inputText);
+                        //printf("Transformation\n");
                         char *token = strtok(inputText, "x"); // On découpe la chaine de caractère avec un espace
                         int largeur = atoi(token); // On convertit le premier élément en int
                         token = strtok(NULL, " "); // On passe au prochain élément
                         int hauteur = atoi(token); // On convertit le deuxième élément en int
+                        //printf("Fin transformation\n");
                         // réassignation de la bonna valeur à la variable input
-                        strcpy(inputText, inputSauv);
+                        //strcpy(inputText, inputSauv);
 
                         GrilleChaine* grille = creerGrilleChaine(largeur, hauteur);
+                        //printf("Dimensions : x = %d, y = %d", grille->dernier->tailleX, grille->dernier->tailleY);
+                        //printf("grille ok\n");
                         runningChoixGrille = 0;
                         //libererGrilleChaine(grille);
                         return grille;

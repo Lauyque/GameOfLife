@@ -99,17 +99,40 @@
 GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
     // Test de la nouvelle structure de grille
     Grille* grille = (Grille*)malloc(sizeof(Grille));
+    if (!grille) {
+        fprintf(stderr, "Erreur d'allocation de mémoire pour la grille\n");
+        exit(EXIT_FAILURE);
+    }
     grille->tailleX = largeur;
     grille->tailleY = hauteur;
+    //printf("Création de la grille : x = %d y = %d\n",grille->tailleX ,grille->tailleY);
     grille->listePointeursLignes = (int**)malloc(grille->tailleY * sizeof(int*));
+    if (!grille->listePointeursLignes) {
+        fprintf(stderr, "Erreur d'allocation de mémoire pour les pointeurs de lignes\n");
+        free(grille);
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < grille->tailleY; i++) {
         grille->listePointeursLignes[i] = (int*)malloc(grille->tailleX * sizeof(int));
+        if (!grille->listePointeursLignes[i]) {
+            fprintf(stderr, "Erreur d'allocation de mémoire pour la ligne %d\n", i);
+        }
         for (int j = 0; j < grille->tailleX; j++) {
+            //printf("1er allocution : i = %d j = %d", i,j);
             grille->listePointeursLignes[i][j] = 0;
         }
     }
 
     GrilleChaine* grilleChaine = (GrilleChaine*)malloc(sizeof(GrilleChaine));
+    // if (!grilleChaine) {
+    //     fprintf(stderr, "Erreur d'allocation de mémoire pour la grille chaînée\n");
+    //     for (int i = 0; i < grille->tailleY; i++) {
+    //         free(grille->listePointeursLignes[i]);
+    //     }
+    //     free(grille->listePointeursLignes);
+    //     free(grille);
+    //     exit(EXIT_FAILURE);
+    // }
     grilleChaine->taille = 1;
     grilleChaine->premier = grille;
     grilleChaine->dernier = grille;
@@ -121,6 +144,7 @@ GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
 
 
 void ajoutGrilleChaine(GrilleChaine *grille) {
+    //printf("Tentative Nouvelle grille");
     setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grille || !grille->dernier) {
         fprintf(stderr, "La grille transferer est vide\n");
@@ -150,6 +174,8 @@ void ajoutGrilleChaine(GrilleChaine *grille) {
         for (int j = 0; j < nouvelleGrille->tailleX; j++) {
             // Mettre à jour les valeurs de la nouvelle grille ici
             nouvelleGrille->listePointeursLignes[i][j] = grille->dernier->listePointeursLignes[i][j]; // Exemple de copie des valeurs
+            //printf("allocution : i = %d j = %d", i,j);
+
         }
     }
 
@@ -159,9 +185,9 @@ void ajoutGrilleChaine(GrilleChaine *grille) {
     grille->dernier = nouvelleGrille;
     grille->taille++;
 
-    printf("Nouvelle grille de taille %d x %d ajoutée à la chaîne\n", nouvelleGrille->tailleX, nouvelleGrille->tailleY);
-    printf("Nombre de grilles dans la chaîne: %lld\n", grille->taille);
-    printf("Nouvelle grille ajoutée à la chaîne\n");
+    //printf("Nouvelle grille de taille %d x %d ajoutée à la chaîne\n", nouvelleGrille->tailleX, nouvelleGrille->tailleY);
+    //printf("Nombre de grilles dans la chaîne: %lld\n", grille->taille);
+    //printf("Nouvelle grille ajoutée à la chaîne\n");
 }
 
 void libererGrilleChaine(GrilleChaine *grille){
@@ -176,7 +202,7 @@ void libererGrilleChaine(GrilleChaine *grille){
         // Libérer la mémoire de la grille actuelle
         for (int i = 0; i < current->tailleY; i++) {
             free(current->listePointeursLignes[i]);
-            printf("Libération de la memoire pour la ligne %d du tableau %lld\n", i, grille->taille);
+            //printf("Libération de la memoire pour la ligne %d du tableau %lld\n", i, grille->taille);
         }
         free(current->listePointeursLignes);
         grille->dernier = current->precedent;
@@ -194,6 +220,7 @@ void libererGrilleChaine(GrilleChaine *grille){
 
 
 void afficherGrilleChaine(GrilleChaine *grilleChaine) {
+    //printf("Affichage grille");
     setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grilleChaine || !grilleChaine->premier) {
         printf("La chaîne de grilles est vide.\n");
@@ -205,8 +232,8 @@ void afficherGrilleChaine(GrilleChaine *grilleChaine) {
 
     while (current != NULL) {
         printf("Grille %d (taille %d x %d):\n", grilleIndex, current->tailleX, current->tailleY);
-        for (int i = 0; i < current->tailleX; i++) {
-            for (int j = 0; j < current->tailleY; j++) {
+        for (int i = 0; i < current->tailleY; i++) {
+            for (int j = 0; j < current->tailleX; j++) {
                 printf("| %d ", current->listePointeursLignes[i][j]);
             }
             printf("|\n");

@@ -59,7 +59,6 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         return 1;
     }
 
-
     // Vérification de la bonne allocution de la mémoire
     if (grille->dernier->listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
@@ -271,7 +270,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
 // Fonction pour afficher la grille dans le jeu
 void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
-
+    printf("Lancement afficher grille jeu");
     // Vérification de la bonne allocution de la mémoire
     if (grille->dernier->listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
@@ -285,9 +284,9 @@ void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, 
 
     SDL_Rect grilleRect = {largeurEcran / 2 - grille->dernier->tailleX * 10, hauteurEcran / 2 - grille->dernier->tailleY * 10, grille->dernier->tailleX * 20, grille->dernier->tailleY * 20};
 
-    for (int i = 0; i < grille->dernier->tailleX; i++){
-        for (int j = 0; j < grille->dernier->tailleY; j++){
-            SDL_Rect caseRect = {grilleRect.x + i * 20, grilleRect.y + j * 20, 20, 20};
+    for (int i = 0; i < grille->dernier->tailleY; i++){
+        for (int j = 0; j < grille->dernier->tailleX; j++){
+            SDL_Rect caseRect = {grilleRect.x + j * 20, grilleRect.y + i * 20, 20, 20};
             if (grille->dernier->listePointeursLignes[i][j] == 1){
                 // Afficher un carré plein
                 SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
