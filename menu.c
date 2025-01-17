@@ -336,22 +336,29 @@ int lancementMenu()
                         (mouseX >= imgRect.x && mouseX <= imgRect.x + imgRect.w &&
                         mouseY >= imgRect.y && mouseY <= imgRect.y + imgRect.h)))
                     {
-                        printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
-
+                        //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
                         // Si le choix est personnalisé, pas besoin de choisir une grille
                         if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0)
                         {
                             //Grille grille = lancementSave(ren, fontTitle, font, white, nomOptions[row * 3 + col]); // Lancement de la partie sauvegardée
-                        } else {
-                            Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                            //if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
+                            //{
+                                //runningMenu = 0;
+                            //}
+                            //libererGrille(&grille);
+                            // Sortir de la de la gestion du clic
+                            break;
                         }
+
+                        // Pour toutes les autres options, on doit choisir une grille
+                        Grille grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
 
                         // Vérification de la grille
                         if (grille.tailleX != 0 || grille.tailleY != 0)
                         {
                             //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
                             // Condition si le choix est "aleatoire"
-                            if (strcmp(nomOptions[row * 3 + col], "Aléatoire") == 0)
+                            if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0)
                             {
                                 srand(time(NULL));
                                 for (int i = 0; i < grille.tailleX; i++)
@@ -361,6 +368,8 @@ int lancementMenu()
                                         grille.listePointeursLignes[i][j] = rand() % 2;
                                     }
                                 }
+                            } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
+                                //void lancementSandBox(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, Grille *grille); // A faire si on a le temps
                             } else if (grille.tailleX > 3 && grille.tailleY > 3) {
                                 grille.listePointeursLignes[2][1] = 1;
                                 grille.listePointeursLignes[3][2] = 1;
