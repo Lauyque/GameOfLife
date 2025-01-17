@@ -8,6 +8,7 @@
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_ttf.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
+#include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
 // #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
@@ -52,6 +53,36 @@ int lancementMenu()
     if (TTF_Init() == -1)
     {
         printf("TTF_Init Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return 1;
+    }
+     // Initialisation de SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        printf("Mix_OpenAudio Error: %s\n", Mix_GetError());
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Charger la musique
+    Mix_Music *music = Mix_LoadMUS("assets/musics/Music1.mp3");
+    if (!music)
+    {
+        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+        //Mix_CloseAudio();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Jouer la musique
+    if (Mix_PlayMusic(music, -1) == -1)
+    {
+        printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+        TTF_Quit();
         SDL_Quit();
         return 1;
     }
@@ -403,6 +434,8 @@ int lancementMenu()
     // Libération de la mémoire
     SDL_DestroyTexture(backgroundTexture);
     IMG_Quit();
+    Mix_CloseAudio();
+    Mix_FreeMusic(music);
     TTF_CloseFont(font);
     TTF_CloseFont(fontTitle);
     TTF_Quit();
