@@ -243,6 +243,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                     }
                 }
 
+                
+
                 // PAUSE
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
                     mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
