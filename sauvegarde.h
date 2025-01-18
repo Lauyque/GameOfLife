@@ -5,5 +5,6 @@
 
 void sauvegarderGrilleChaine(GrilleChaine *grilleChaine, const char *nomFichier);
 GrilleChaine* chargerGrilleChaine(const char *nomFichier);
+char* ouvrirExplorateurFichiers();
 
 #endif // SAUVEGARDE_H

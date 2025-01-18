@@ -34,8 +34,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
     {
         printf("Mix_OpenAudio Error: %s\n", Mix_GetError());
-        TTF_Quit();
-        SDL_Quit();
+        //TTF_Quit();
+        //SDL_Quit();
         return 1;
     }
 
@@ -44,21 +44,24 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
     if (!music)
     {
         printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
-        //Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Jouer la musique
-    if (Mix_PlayMusic(music, -1) == -1)
-    {
-        printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
         Mix_FreeMusic(music);
-        Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
+        music = NULL;
+        //Mix_CloseAudio();
+        //TTF_Quit();
+        //SDL_Quit();
+        //return 1;
+    } else {
+        // Jouer la musique
+        if (Mix_PlayMusic(music, -1) == -1)
+        {
+            printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
+            Mix_FreeMusic(music);
+            Mix_CloseAudio();
+            music = NULL;
+            //TTF_Quit();
+            //SDL_Quit();
+            //return 1;
+        }
     }
 
     // Vérification de la bonne allocution de la mémoire

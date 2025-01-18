@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
@@ -75,8 +76,10 @@ int lancementMenu()
     {
         printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
         //Mix_CloseAudio();
-        TTF_Quit();
-        SDL_Quit();
+        Mix_FreeMusic(music);
+        music = NULL;
+        //TTF_Quit();
+        //SDL_Quit();
         return 1;
     }
 
@@ -212,18 +215,18 @@ int lancementMenu()
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
 
-                if (mouseX >= 50 && mouseX <= 150 && mouseY >= hauteurEcran - 100 && mouseY <= hauteurEcran - 50)
-                {
-                    GrilleChaine *grille = chargerGrilleChaine("sauvegarde.txt");
-                    if (grille) 
-                    {
-                        if (lancementJeu(ren, font, font, white, "Jeu chargé", grille) != 0) 
-                        {
-                            fprintf(stderr, "Erreur lors du lancement du jeu chargé\n");
-                        }
-                        libererGrilleChaine(grille);
-                    }
-                }
+                // if (mouseX >= 50 && mouseX <= 150 && mouseY >= hauteurEcran - 100 && mouseY <= hauteurEcran - 50)
+                // {
+                //     GrilleChaine *grille = chargerGrilleChaine("sauvegarde.txt");
+                //     if (grille) 
+                //     {
+                //         if (lancementJeu(ren, font, font, white, "Jeu chargé", grille) != 0) 
+                //         {
+                //             fprintf(stderr, "Erreur lors du lancement du jeu chargé\n");
+                //         }
+                //         libererGrilleChaine(grille);
+                //     }
+                // }
 
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
@@ -287,11 +290,11 @@ int lancementMenu()
             quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
             quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
             
-            // Bouton "Charger"
-            SDL_Rect loadRect = {50, hauteurEcran - 100, 100, 50};
-            SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
-            SDL_RenderFillRect(ren, &loadRect);
-            afficherTexte(ren, font, "Charger", loadRect.x + 10, loadRect.y + 10, white);
+            // // Bouton "Charger"
+            // SDL_Rect loadRect = {50, hauteurEcran - 100, 100, 50};
+            // SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+            // SDL_RenderFillRect(ren, &loadRect);
+            // afficherTexte(ren, font, "Charger", loadRect.x + 10, loadRect.y + 10, white);
 
             //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
             //SDL_RenderDrawRect(ren, &quitterRect);
@@ -398,6 +401,50 @@ int lancementMenu()
                         // Si le choix est personnalisé, pas besoin de choisir une grille
                         if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0)
                         {
+                            //GrilleChaine* chargerGrilleChaine(*nomFichier);
+
+                            // Minimiser la fenêtre SDL
+                            SDL_MinimizeWindow(menu);
+
+                            // Utiliser la fonction pour obtenir le chemin du fichier sélectionné
+                            char* nomFichier = ouvrirExplorateurFichiers();
+
+                            // Restaurer la fenêtre SDL
+                            SDL_RestoreWindow(menu);
+                            if (nomFichier) {
+                                GrilleChaine* grille = chargerGrilleChaine(nomFichier);
+                                //afficherGrilleChaine(grille);
+                                free(nomFichier);
+
+                                // Arrêter la musique actuelle
+                                if (Mix_PlayingMusic()) {
+                                    Mix_HaltMusic();
+                                }
+                                if (music) {
+                                    Mix_FreeMusic(music);
+                                    music = NULL;
+                                }
+
+                                if (grille) {
+                                    if (lancementJeu(ren, font, font, white, "Partie Personnalisé", grille) != 0) {
+                                        fprintf(stderr, "Erreur lors du lancement du jeu chargé\n");
+                                        runningMenu = 0;
+                                    }
+                                    libererGrilleChaine(grille);
+
+                                    // Relancer la musique
+                                    music = Mix_LoadMUS("assets/musics/Music1.mp3");
+                                    if (!music) {
+                                        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+                                    } else {
+                                        if (Mix_PlayMusic(music, -1) == -1) {
+                                            printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
+                                        }
+                                    }
+                                }
+                            } else {
+                                printf("Aucun fichier sélectionné.\n");
+                            }
                             //Grille grille = lancementSave(ren, fontTitle, font, white, nomOptions[row * 3 + col]); // Lancement de la partie sauvegardée
                             //if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
                             //{
@@ -405,57 +452,58 @@ int lancementMenu()
                             //}
                             //libererGrille(&grille);
                             // Sortir de la de la gestion du clic
-                            break;
-                        }
-
-                        // Pour toutes les autres options, on doit choisir une grille
-                        GrilleChaine* grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
-
-                        // Vérification de la grille
-                        if (grille->dernier->tailleX != 0 || grille->dernier->tailleY != 0)
-                        {
-                            // Arrêter la musique actuelle
-                            Mix_HaltMusic();
-                            Mix_FreeMusic(music);
-                            
-                            //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
-                            // Condition si le choix est "aleatoire"
-                            if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0) { // Lancement de l'option aléatoire
-                                srand(time(NULL));
-                                for (int i = 0; i < grille->dernier->tailleY; i++) {
-                                    for (int j = 0; j < grille->dernier->tailleX; j++) {
-                                        grille->dernier->listePointeursLignes[i][j] = rand() % 2;
-                                        //printf("Alléatoire pour la case : x = %d y = %d\n", j,i);
-                                    }
-                                }
-                            } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
-                                //void lancementSandBox(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, Grille *grille); // A faire si on a le temps
-                            } else if (grille->dernier->tailleX > 3 && grille->dernier->tailleY > 3) {
-                                grille->dernier->listePointeursLignes[2][1] = 1;
-                                grille->dernier->listePointeursLignes[3][2] = 1;
-                                grille->dernier->listePointeursLignes[1][3] = 1;
-                                grille->dernier->listePointeursLignes[2][3] = 1;
-                                grille->dernier->listePointeursLignes[3][3] = 1;
-                            } else {
-                                fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
-                                runningMenu = 0;
-                            }
-                            if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], grille) != 0)
-                            {
-                                fprintf(stderr, "Erreur lors du lancement du jeu\n");
-                                runningMenu = 0;
-                            }
-                            //libererGrilleChaine(grille);
-                            // Relancer la musique
-                            music = Mix_LoadMUS("assets/musics/Music1.mp3");
-                            if (!music) {
-                                printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
-                            } else {
-                                Mix_PlayMusic(music, -1);
-                            }
+                            //break;
                         } else {
-                            libererGrilleChaine(grille);
-                            printf("Erreur lors du choix de la grille\n");
+
+                            // Pour toutes les autres options, on doit choisir une grille
+                            GrilleChaine* grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+
+                            // Vérification de la grille
+                            if (grille->dernier->tailleX != 0 || grille->dernier->tailleY != 0)
+                            {
+                                // Arrêter la musique actuelle
+                                Mix_HaltMusic();
+                                Mix_FreeMusic(music);
+                                
+                                //printf("Lancement du jeu pour l'option %s\n", nomOptions[row * 3 + col]);
+                                // Condition si le choix est "aleatoire"
+                                if (strcmp(nomOptions[row * 3 + col], nomOptions[3]) == 0) { // Lancement de l'option aléatoire
+                                    srand(time(NULL));
+                                    for (int i = 0; i < grille->dernier->tailleY; i++) {
+                                        for (int j = 0; j < grille->dernier->tailleX; j++) {
+                                            grille->dernier->listePointeursLignes[i][j] = rand() % 2;
+                                            //printf("Alléatoire pour la case : x = %d y = %d\n", j,i);
+                                        }
+                                    }
+                                } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
+                                    //void lancementSandBox(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, Grille *grille); // A faire si on a le temps
+                                } else if (grille->dernier->tailleX > 3 && grille->dernier->tailleY > 3) {
+                                    grille->dernier->listePointeursLignes[2][1] = 1;
+                                    grille->dernier->listePointeursLignes[3][2] = 1;
+                                    grille->dernier->listePointeursLignes[1][3] = 1;
+                                    grille->dernier->listePointeursLignes[2][3] = 1;
+                                    grille->dernier->listePointeursLignes[3][3] = 1;
+                                } else {
+                                    fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
+                                    runningMenu = 0;
+                                }
+                                if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], grille) != 0)
+                                {
+                                    fprintf(stderr, "Erreur lors du lancement du jeu\n");
+                                    runningMenu = 0;
+                                }
+                                //libererGrilleChaine(grille);
+                                // Relancer la musique
+                                music = Mix_LoadMUS("assets/musics/Music1.mp3");
+                                if (!music) {
+                                    printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+                                } else {
+                                    Mix_PlayMusic(music, -1);
+                                }
+                            } else {
+                                libererGrilleChaine(grille);
+                                printf("Erreur lors du choix de la grille\n");
+                            }
                         }
                         
                     }
@@ -505,7 +553,7 @@ SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(ren, textSurface);
     if (textTexture == NULL) {
         printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
-        printf("- Impossible d'afficher le texte\n");
+        printf("- Impossible d'afficher le texte : %s\n", texte);
         SDL_FreeSurface(textSurface);
         return (SDL_Rect){0, 0, 0, 0};
     }
