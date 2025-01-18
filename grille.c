@@ -98,6 +98,7 @@
 // NOUVELLE STRUCT EN DOUBLE CHAINEE
 GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
     // Test de la nouvelle structure de grille
+    //printf("Création d'une nouvelle grille\n");
     Grille* grille = (Grille*)malloc(sizeof(Grille));
     if (!grille) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la grille\n");
