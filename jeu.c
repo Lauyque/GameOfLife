@@ -15,7 +15,7 @@
 
 // PROTOTYPES
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille);
-void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color);
+SDL_Rect* afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color,const char *nom,int *caseX,int *caseY, int* mouseX, int* mouseY);
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
 int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect);
 
@@ -76,6 +76,10 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         int largeurEcran = DM.w;
         int hauteurEcran = DM.h;
 
+        // Vérification des cases
+        int caseX = -1;
+        int caseY = -1;
+
         // Afficher le titre
         // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
         SDL_Rect titleTextRect = afficherTexte(ren, fontTitle, nom, ((largeurEcran/2)-(400)), 10,  color);
@@ -118,16 +122,22 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_Rect grilleRect = {largeurEcran / 2 - grille->dernier->tailleX * 10 + 1, hauteurEcran / 2 - grille->dernier->tailleY * 10 + 1, grille->dernier->tailleX * 20 + 0, grille->dernier->tailleY * 20 + 0}; // +1 pour afficher un contour
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur blanche
         SDL_RenderDrawRect(ren, &grilleRect); // Dessiner le rectangle
+
         // Afficher la grille dans le rectangle
-        afficherGrilleJeu(grille, ren, font, color);
+        int temp1 = 0;
+        int temp2 = 0;
+        afficherGrilleJeu(grille, ren, font, color, nom, &caseX, &caseY, &temp1, &temp2);
 
-        // Gestion du temps entre les tours
-        // Si on veut mettre un temps d'attente entre chaque tour
-        // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
-        vérifierCaseVivante(grille);
+        // Condition pour ne pas avancer de tour si l'option "SandBox a été choisie"
+        if (strcmp(nom, "SandBox") != 0){
+            // Gestion du temps entre les tours
+            // Si on veut mettre un temps d'attente entre chaque tour
+            // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
+            vérifierCaseVivante(grille);
 
-        // Augmenter le nombre de tour
-        tour++;
+            // Augmenter le nombre de tour
+            tour++;
+        }
 
         // Menu à droite
         SDL_Rect menuDroiteRect = {largeurEcran - 200, 0, 200, hauteurEcran};
@@ -249,6 +259,13 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 {
                     runningJeu = pause(ren, fontTitle, font, color, pauseRect, quitterRect);
                 }
+
+                // Clique dans la grille
+                else if (mouseX >= grilleRect.x && mouseX < grilleRect.x + grilleRect.w &&
+                        mouseY >= grilleRect.y && mouseY < grilleRect.y + grilleRect.h) {
+                    //printf("Un clique dans la grille\n");
+                    afficherGrilleJeu(grille, ren, font, color, nom, &caseX, &caseY, &mouseX, &mouseY);
+                }
             }
         }
 
@@ -269,7 +286,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 }
 
 // Fonction pour afficher la grille dans le jeu
-void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color){
+SDL_Rect* afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color,const char *nom, int *caseX, int *caseY, int* mouseX, int* mouseY){
     // Vérification de la bonne allocution de la mémoire
     if (grille->dernier->listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
@@ -300,8 +317,26 @@ void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, 
             // Dessiner le contour du carré
             SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); // Couleur noir
             SDL_RenderDrawRect(ren, &caseRect);
+
+            // Dectecter un clique
+            if (strcmp(nom, "SandBox") == 0){
+                //printf("Vérification de clique\n");
+                // Vérifier si le clic est dans cette case
+                if (*mouseX >= caseRect.x && *mouseX < caseRect.x + caseRect.w &&
+                    *mouseY >= caseRect.y && *mouseY < caseRect.y + caseRect.h) {
+                    //printf("- Clique verifié\n");
+                    *caseX = j;
+                    *caseY = i;
+                    if (*caseX != -1 && *caseY != -1) {
+                        grille->dernier->listePointeursLignes[i][j] = 1;
+                        //printf("- Case cliquée: (%d, %d)\n", *caseX, *caseY);
+                    }
+                }
+            }
         }
     }
+
+    return &grilleRect;
 }
 
 
