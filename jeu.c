@@ -11,7 +11,8 @@
 #include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
 // Mes propres fichiers
-//#include "grille.h"
+#include "grille.h"
+#include "sauvegarde.h"
 
 // PROTOTYPES
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille);
@@ -223,6 +224,12 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
 
+                // Gestion du bouton "Sauvegarder"
+                if (mouseX >= 50 && mouseX <= 150 && mouseY >= 50 && mouseY <= 100) 
+                {
+                    sauvegarderGrilleChaine(grille, "sauvegarde.txt");
+                }
+
                 // QUITTER
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h) {
@@ -253,6 +260,12 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 }
             }
         }
+
+        // Bouton "Sauvegarder"
+        SDL_Rect saveRect = {50, 50, 100, 50}; // Position en haut à gauche
+        SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
+        SDL_RenderFillRect(ren, &saveRect);
+        afficherTexte(ren, font, "Sauvegarder", saveRect.x + 10, saveRect.y + 10, color);
 
         // Afficher le rendu
         SDL_RenderPresent(ren);

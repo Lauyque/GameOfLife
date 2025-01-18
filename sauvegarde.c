@@ -13,7 +13,7 @@ void sauvegarderGrilleChaine(GrilleChaine *grilleChaine, const char *nomFichier)
         return;
     }
 
-    fprintf(fichier, "%zu\n", grilleChaine->taille);
+    fprintf(fichier, "%lu\n", grilleChaine->taille);
 
     Grille *actuelle = grilleChaine->premier;
     while (actuelle != NULL) {
@@ -39,7 +39,7 @@ GrilleChaine* chargerGrilleChaine(const char *nomFichier) {
     }
 
     size_t taille;
-    fscanf(fichier, "%zu", &taille);
+    fscanf(fichier, "%lu", &taille);
 
     GrilleChaine *grilleChaine = (GrilleChaine *)malloc(sizeof(GrilleChaine));
     grilleChaine->taille = 0;
