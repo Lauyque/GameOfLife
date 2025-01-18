@@ -421,6 +421,13 @@ int lancementMenu()
                                 runningMenu = 0;
                             }
                             //libererGrilleChaine(grille);
+                            // Relancer la musique
+                            music = Mix_LoadMUS("assets/musics/Music1.mp3");
+                            if (!music) {
+                                printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+                            } else {
+                                Mix_PlayMusic(music, -1);
+                            }
                         } else {
                             libererGrilleChaine(grille);
                             printf("Erreur lors du choix de la grille\n");
@@ -606,4 +613,3 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
     
     return 0;
 }
-
