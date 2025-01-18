@@ -15,6 +15,8 @@
 
 // Mes propres fichiers
 #include "grille.c"
+#include "grille.h"
+#include "sauvegarde.h"
 #include "caseVie.c"
 #include "choixGrille.c"
 #include "jeu.c"
@@ -202,11 +204,27 @@ int lancementMenu()
         // Gestion des événements de la fenêtre
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) {
-                    runningMenu = 0;
-            } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+            if (e.type == SDL_QUIT) 
+            {
+                runningMenu = 0;
+            } 
+            else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
+
+                if (mouseX >= 50 && mouseX <= 150 && mouseY >= hauteurEcran - 100 && mouseY <= hauteurEcran - 50)
+                {
+                    GrilleChaine *grille = chargerGrilleChaine("sauvegarde.txt");
+                    if (grille) 
+                    {
+                        if (lancementJeu(ren, font, font, white, "Jeu chargé", grille) != 0) 
+                        {
+                            fprintf(stderr, "Erreur lors du lancement du jeu chargé\n");
+                        }
+                        libererGrilleChaine(grille);
+                    }
+                }
+
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
                 {
@@ -268,6 +286,13 @@ int lancementMenu()
             quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
             quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
             quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
+            
+            // Bouton "Charger"
+            SDL_Rect loadRect = {50, hauteurEcran - 100, 100, 50};
+            SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
+            SDL_RenderFillRect(ren, &loadRect);
+            afficherTexte(ren, font, "Charger", loadRect.x + 10, loadRect.y + 10, white);
+
             //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
             //SDL_RenderDrawRect(ren, &quitterRect);
 
