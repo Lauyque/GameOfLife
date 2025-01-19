@@ -11,33 +11,12 @@
 #include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
-// #include <getcwd()\dependancy\SDL2\SDL2-2.30.10\include\SDL.h>
-// #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
-
 // Mes propres fichiers
 #include "grille.h"
 #include "menu.h"
 #include "sauvegarde.h"
-//#include "caseVie.c"
 #include "choixGrille.h"
 #include "jeu.h"
-
-// PROTOTYPES
-//int lancementMenu();
-//SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
-//SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
-//SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
-
-//int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
-//GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
-//void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
-
-// IDEE d'avancement.
-// -> Faire une liste de tout les pointeurs de toutes nos varaibles et mettre en parametre de nos fonctions
-//    pour pouvoir les modifier directement et avoir accès à toutes les variables.
-// -> Ajouter une librairie de video ou gif pour mettre des animations dans le menu
-// -> Ajouter une librairie pour des sons
-
 
 // Fonction qui affiche le menu
 int lancementMenu()
@@ -218,19 +197,6 @@ int lancementMenu()
                 int mouseX = e.button.x;
                 int mouseY = e.button.y;
 
-                // if (mouseX >= 50 && mouseX <= 150 && mouseY >= hauteurEcran - 100 && mouseY <= hauteurEcran - 50)
-                // {
-                //     GrilleChaine *grille = chargerGrilleChaine("sauvegarde.txt");
-                //     if (grille) 
-                //     {
-                //         if (lancementJeu(ren, font, font, white, "Jeu chargé", grille) != 0) 
-                //         {
-                //             fprintf(stderr, "Erreur lors du lancement du jeu chargé\n");
-                //         }
-                //         libererGrilleChaine(grille);
-                //     }
-                // }
-
                 if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
                     mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
                 {
@@ -292,33 +258,6 @@ int lancementMenu()
             quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
             quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
             quitterRect.y -= 5; // Permet de commencer la zone de clic plus en haut
-            
-            // // Bouton "Charger"
-            // SDL_Rect loadRect = {50, hauteurEcran - 100, 100, 50};
-            // SDL_SetRenderDrawColor(ren, 0, 0, 255, 255);
-            // SDL_RenderFillRect(ren, &loadRect);
-            // afficherTexte(ren, font, "Charger", loadRect.x + 10, loadRect.y + 10, white);
-
-            //SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-            //SDL_RenderDrawRect(ren, &quitterRect);
-
-            // SDL_Event e;
-            // while (SDL_PollEvent(&e))
-            // {
-            //     if (e.type == SDL_QUIT)
-            //     {
-            //         runningMenu = 0;
-            //     } else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
-            //     {
-            //         int mouseX = e.button.x;
-            //         int mouseY = e.button.y;
-            //         if (mouseX >= quitterRect.x && mouseX <= quitterRect.x + quitterRect.w &&
-            //             mouseY >= quitterRect.y && mouseY <= quitterRect.y + quitterRect.h)
-            //         {
-            //             runningMenu = 0;
-            //         }
-            //     }
-            // }
 
             // Afficher le titre
             // Afficher le titre au debut de la fenetre pour recuperer la taille du texte
@@ -448,14 +387,8 @@ int lancementMenu()
                             } else {
                                 printf("Aucun fichier sélectionné.\n");
                             }
-                            //Grille grille = lancementSave(ren, fontTitle, font, white, nomOptions[row * 3 + col]); // Lancement de la partie sauvegardée
-                            //if (lancementJeu(ren, fontTitle, font, white, nomOptions[row * 3 + col], &grille) != 0)
-                            //{
-                                //runningMenu = 0;
-                            //}
-                            //libererGrille(&grille);
-                            // Sortir de la de la gestion du clic
-                            //break;
+
+                        // Si c'est pas une partie personnalisée
                         } else {
 
                             // Pour toutes les autres options, on doit choisir une grille
