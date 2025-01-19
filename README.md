@@ -10,27 +10,36 @@ Le Jeu de la Vie est un automate cellulaire imaginé par le mathématicien brita
 Ce projet implémente le Jeu de la Vie en C, avec une grille de jeu représentée par une structure de données personnalisée et une interface graphique avec SDL2.
 
 ## 🤲 Structure du Projet
+- `main.c` : Point d'entrée du programme, contenant la logique principale du jeu.
 - `grille.h` : Contient les définitions et prototypes pour la gestion de la grille.
 - `grille.c` : Contient les implémentations des fonctions pour manipuler la grille.
 - `caseVie.c` : Contient le principe du jeux avec les différentes règles.
-- `menu.c` : Contient le lanceur graphique du jeux
-- `main.c` : Point d'entrée du programme, contenant la logique principale du jeu.
+- `menu.c` : Contient le lanceur graphique du jeux et le choix de la taille de la grille.
+- `jeu.c` : Contient l'interface graphique pour le jeu.
+- `sauvegarde.c` : Contient toutes les fonctions pour sauvegarder la grille et permettre son importation.
+- `sauvegarde.h` : Contient les prototypes des fonctions définies dans `sauvegarde.c`.
+
 
 ## Fichiers Importants
 
 ### grille.h
 ```cpp
 // Prototype de la grille qui permet de créer la liste avec la taille en YxZ
-typedef struct Grille Grille;
+struct GrilleChaine {
+    size_t taille;
+    struct Grille *dernier;
+    struct Grille *premier;
+};
 
-struct Grille
-{
+struct Grille {
+    struct Grille *precedent;
+    struct Grille *suivant;
     int tailleX;
     int tailleY;
-    int** listePointeursLignes;
+    int **listePointeursLignes;
 };
 ```
-Ce type personnalisé permet une gestion plus simple avec des liste de notre jeu
+Ce type personnalisé, appelé double liste chaînée, permet de suivre l'historique de toutes les grilles calculées au cours de la vie du jeu.
 
 ## ©️ Compilation et Exécution
 Pour compiler et exécuter le programme, utilisez les commandes suivantes :  
