@@ -3,6 +3,7 @@
 #include <locale.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
@@ -29,6 +30,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
     int DELAY = 200; // Délai en millisecondes entre chaque tour
     int DELAY_MAX = 400; // Délai maximum en millisecondes entre chaque tour
     int DELAY_VISIBLE = 2; // Délai en millisecondes pour afficher les changements
+    bool caseCoche = false; // Permet de passer les tours automatiquements
 
     // Initialisation de SDL_mixer
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
@@ -138,10 +140,11 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
             // Gestion du temps entre les tours
             // Si on veut mettre un temps d'attente entre chaque tour
             // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
-            vérifierCaseVivante(grille);
-
-            // Augmenter le nombre de tour
-            tour++;
+            if (caseCoche){
+                vérifierCaseVivante(grille);
+                // Augmenter le nombre de tour
+                tour++;
+            }
         }
 
         // Menu à droite
@@ -158,11 +161,40 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Obtenir les dimensions du texte
         SDL_Rect tourTextRect = afficherTexte(ren, font, tourText, largeurEcran - (menuDroiteRect.w - 20), menuDroiteTextRect.y +100, color);
         // rectangle à la toute droite de l'écran pour afficher le nombre de tours
-        SDL_Rect tourRect = {tourTextRect.x - 10, tourTextRect.y - 5, tourTextRect.w + 20, tourTextRect.h + 10};
+        SDL_Rect tourRect = {tourTextRect.x - 10, tourTextRect.y - 5, tourTextRect.w + 20, tourTextRect.h * 3};
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche
         SDL_RenderDrawRect(ren, &tourRect); // Dessiner le rectangle
 
         // Faire la case à cocher et les boutons pour passer les tours manuellement.
+        // Bouton retour arrière
+        SDL_Rect boutonRetourArriere = {largeurEcran - (menuDroiteRect.w - 20), tourRect.y + 40, 25, 20}; // Taille du bouton
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        SDL_RenderDrawRect(ren, &boutonRetourArriere);
+        //SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        //SDL_RenderFillRect(ren, &boutonRetourArriere);
+        afficherTexte(ren, font, "<", boutonRetourArriere.x + 8, boutonRetourArriere.y, color); // Afficher le texte du bouton
+        // Bouton pour avancer
+        SDL_Rect boutonAvancer = {largeurEcran - (menuDroiteRect.w - 60), tourRect.y + 40, 25, 20}; // Taille du bouton
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+        SDL_RenderDrawRect(ren, &boutonAvancer);
+        //SDL_SetRenderDrawColor(ren, 0, 0, 0, 255); 
+        //SDL_RenderFillRect(ren, &boutonAvancer);
+        afficherTexte(ren, font, ">", boutonAvancer.x + 8, boutonAvancer.y, color); // Afficher le texte du bouton
+
+        // Case à cocher
+        SDL_Rect checkboxRect = {largeurEcran - (menuDroiteRect.w - 10), tourRect.y + 80, 20, 20}; // Taille de la case à cocher
+        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche pour le contour
+        SDL_RenderDrawRect(ren, &checkboxRect);
+
+        // Si la case est cochée, dessiner un carré à l'intérieur
+        if (caseCoche) {
+            SDL_Rect innerRect = {checkboxRect.x + 5, checkboxRect.y + 5, 10, 10};
+            SDL_SetRenderDrawColor(ren, 255, 255, 255, 255); // Couleur blanche pour l'intérieur
+            SDL_RenderFillRect(ren, &innerRect);
+        }
+
+        // Afficher le texte à droite de la case à cocher
+        afficherTexte(ren, font, "Tours Automatiques", checkboxRect.x + 25, tourRect.y + 80, color);
 
         // Afficher la vitesse en haut à droite sous le nombre de tour
         SDL_Rect vitesseTextRect = afficherTexte(ren, font, "Vitesse :", largeurEcran - (menuDroiteRect.w - 20), tourRect.y + 120, color);
@@ -266,7 +298,31 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                     }
                 }
 
+                // Aller en arrière
+                else if (mouseX >= boutonRetourArriere.x && mouseX < boutonRetourArriere.x + boutonRetourArriere.w &&
+                         mouseY >= boutonRetourArriere.y && mouseY < boutonRetourArriere.y + boutonRetourArriere.h) {
+
+                        vérifierCaseVivante(grille);
+                        tour++;
+                }
+                // Aller en avant
+                else if (mouseX >= boutonAvancer.x && mouseX < boutonAvancer.x + boutonAvancer.w &&
+                         mouseY >= boutonAvancer.y && mouseY < boutonAvancer.y + boutonAvancer.h) {
+
+                        vérifierCaseVivante(grille);
+                        tour++;
+                }
+
+                // Case à cocher
+                else if (mouseX >= checkboxRect.x && mouseX < checkboxRect.x + checkboxRect.w &&
+                         mouseY >= checkboxRect.y && mouseY < checkboxRect.y + checkboxRect.h) {
                 
+                        if (caseCoche){
+                            caseCoche = false;
+                        } else {
+                            caseCoche = true;
+                        }
+                }
 
                 // PAUSE
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
