@@ -141,9 +141,14 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
             // Si on veut mettre un temps d'attente entre chaque tour
             // On peut utiliser la fonction SDL_GetTicks() qui retourne le nombre de millisecondes écoulées depuis l'initialisation de la SDL
             if (caseCoche){
-                vérifierCaseVivante(grille);
-                // Augmenter le nombre de tour
-                tour++;
+                // Vérifier si la grille suivante n'a pas déjà été calculée
+                if (grille->dernier->suivant != NULL){
+                    grille->dernier = grille->dernier->suivant;
+                } else {
+                    vérifierCaseVivante(grille);
+                    // Augmenter le nombre de tours
+                    tour++;
+                }
             }
         }
 
@@ -302,8 +307,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 else if (mouseX >= boutonRetourArriere.x && mouseX < boutonRetourArriere.x + boutonRetourArriere.w &&
                          mouseY >= boutonRetourArriere.y && mouseY < boutonRetourArriere.y + boutonRetourArriere.h) {
 
-                        vérifierCaseVivante(grille);
-                        tour++;
+                        grille->dernier = grille->dernier->precedent;
+                        tour--;
                 }
                 // Aller en avant
                 else if (mouseX >= boutonAvancer.x && mouseX < boutonAvancer.x + boutonAvancer.w &&
@@ -326,8 +331,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 
                 // PAUSE
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
-                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h)
-                {
+                    mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h) {
+                    
                     runningJeu = pause(ren, fontTitle, font, color, pauseRect, quitterRect);
                 }
 
