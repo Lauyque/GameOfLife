@@ -15,22 +15,22 @@
 // #include <dependancy\SDL2_TTF\SDL2_ttf-2.22.0\include\SDL_ttf.h>
 
 // Mes propres fichiers
-#include "grille.c"
 #include "grille.h"
+#include "menu.h"
 #include "sauvegarde.h"
-#include "caseVie.c"
-#include "choixGrille.c"
-#include "jeu.c"
+//#include "caseVie.c"
+#include "choixGrille.h"
+#include "jeu.h"
 
 // PROTOTYPES
-int lancementMenu();
-SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
-SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
-SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
+//int lancementMenu();
+//SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
+//SDL_Rect afficherImage(SDL_Renderer *ren, const char *imagePath, SDL_Rect rect);
+//SDL_Rect afficherNom(SDL_Renderer *ren, TTF_Font *font, SDL_Rect rect, const char *nom, SDL_Color color);
 
-int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
-GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
-void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
+//int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, const char *description);
+//GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
+//void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
 
 // IDEE d'avancement.
 // -> Faire une liste de tout les pointeurs de toutes nos varaibles et mettre en parametre de nos fonctions
@@ -42,6 +42,9 @@ void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Re
 // Fonction qui affiche le menu
 int lancementMenu()
 {
+    // Rediriger les erreurs vers un fichier
+    freopen("error_menu_log.txt", "w", stderr);
+
     setlocale(LC_ALL, "fr_FR.UTF-8");
     // Variable pour la boucle principale
     int runningMenu = 1;
@@ -57,24 +60,24 @@ int lancementMenu()
     // Initialisation de SDL_ttf
     if (TTF_Init() == -1)
     {
-        printf("TTF_Init Error: %s\n", TTF_GetError());
+        fprintf(stderr, "TTF_Init Error: %s\n", TTF_GetError());
         SDL_Quit();
         return 1;
     }
      // Initialisation de SDL_mixer
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
     {
-        printf("Mix_OpenAudio Error: %s\n", Mix_GetError());
+        fprintf(stderr, "Mix_OpenAudio Error: %s\n", Mix_GetError());
         TTF_Quit();
         SDL_Quit();
         return 1;
     }
 
     // Charger la musique
-    Mix_Music *music = Mix_LoadMUS("assets/musics/Music1.mp3");
+    Mix_Music *music = Mix_LoadMUS("../assets/musics/Music1.mp3");
     if (!music)
     {
-        printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
+        fprintf(stderr, "Mix_LoadMUS Error: %s\n", Mix_GetError());
         //Mix_CloseAudio();
         Mix_FreeMusic(music);
         music = NULL;
@@ -86,7 +89,7 @@ int lancementMenu()
     // Jouer la musique
     if (Mix_PlayMusic(music, -1) == -1)
     {
-        printf("Mix_PlayMusic Error: %s\n", Mix_GetError());
+        fprintf(stderr, "Mix_PlayMusic Error: %s\n", Mix_GetError());
         Mix_FreeMusic(music);
         Mix_CloseAudio();
         TTF_Quit();
@@ -101,8 +104,8 @@ int lancementMenu()
     int hauteurEcran = DM.h;
 
     // Chemin relatif vers le fichier de police
-    const char *fontPathArial = "assets/fonts/arial/arial.ttf";
-    const char *fontPathVdub = "assets/fonts/v-dub/v_dub.ttf";
+    const char *fontPathArial = "../assets/fonts/arial/arial.ttf";
+    const char *fontPathVdub = "../assets/fonts/v-dub/v_dub.ttf";
 
     // Nom des options
     const char *nomOptions[6] = {
@@ -125,26 +128,26 @@ int lancementMenu()
 
     // Chemins des images
     const char *imagePaths[6] = {
-        "assets/images/Glider.bmp",
-        "assets/images/Glider.bmp",
-        "assets/images/Glider.bmp",
-        "assets/images/Aleatoire.bmp",
-        "assets/images/Sandbox.bmp",
-        "assets/images/Personnalise.bmp"};
+        "../assets/images/Glider.bmp",
+        "../assets/images/Glider.bmp",
+        "../assets/images/Glider.bmp",
+        "../assets/images/Aleatoire.bmp",
+        "../assets/images/Sandbox.bmp",
+        "../assets/images/Personnalise.bmp"};
 
 
     // Création de la fenêtre
     SDL_Window *menu = SDL_CreateWindow("Game of Life", 0, 0, largeurEcran, hauteurEcran, SDL_WINDOW_FULLSCREEN);
     if (menu == NULL)
     {
-        printf("SDL_CreateWindow Error: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
         TTF_Quit();
         SDL_Quit();
         return 1;
     }
 
     // Définir l'icône de la fenêtre
-    SDL_Surface *iconSurface = SDL_LoadBMP("assets/images/Glider.bmp");
+    SDL_Surface *iconSurface = SDL_LoadBMP("../assets/images/Glider.bmp");
     if (iconSurface != NULL)
     {
         SDL_SetWindowIcon(menu, iconSurface);
@@ -152,7 +155,7 @@ int lancementMenu()
     }
     else
     {
-        printf("SDL_LoadBMP Error: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL_LoadBMP Error: %s\n", SDL_GetError());
     }
 
     // Création du renderer
@@ -160,14 +163,14 @@ int lancementMenu()
     if (ren == NULL)
     {
         SDL_DestroyWindow(menu);
-        printf("SDL_CreateRenderer Error: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
         TTF_Quit();
         SDL_Quit();
         return 1;
     }
 
     // Déclaration des fonts
-    SDL_Color black = {0, 0, 0, 255};
+    //SDL_Color black = {0, 0, 0, 255};
     SDL_Color white = {255, 255, 255, 255};
     TTF_Font *fontTitle = TTF_OpenFont(fontPathVdub, 24);
     TTF_Font *font = TTF_OpenFont(fontPathArial, 18);
@@ -179,16 +182,16 @@ int lancementMenu()
 
 
     // Afficher une image de fond avec sdl2 image
-    SDL_Surface *background = IMG_Load("assets/images/BG.png");
+    SDL_Surface *background = IMG_Load("../assets/images/BG.png");
     if (background == NULL)
     {
-        printf("IMG_Load Error: %s\n", IMG_GetError());
+        fprintf(stderr, "IMG_Load Error: %s\n", IMG_GetError());
         runningMenu = 0;
     }
     SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(ren, background); // Créer une texture à partir de l'image
     if (backgroundTexture == NULL)
     {
-        printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
         printf("- Impossible d'afficher l'image: %s\n", SDL_GetError());
         SDL_FreeSurface(background);
         runningMenu = 0;
@@ -284,7 +287,7 @@ int lancementMenu()
             }
 
             // Afficher le texte "Quitter" centré dans le rectangle
-            SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, white);
+            afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, white);
             quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
             quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
             quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
@@ -456,7 +459,7 @@ int lancementMenu()
                         } else {
 
                             // Pour toutes les autres options, on doit choisir une grille
-                            GrilleChaine* grille = lancementChoixGrille(ren, fontTitle, font, white, nomOptions[row * 3 + col]);
+                            GrilleChaine* grille = lancementChoixGrille(ren, fontTitle, font, white);
 
                             // Vérification de la grille
                             if (grille->dernier->tailleX != 0 || grille->dernier->tailleY != 0)
@@ -642,18 +645,18 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
 
     while(runningPlusInformation == 1){
 
-                // Effacer l'écran
+        // Effacer l'écran
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
         SDL_RenderClear(ren);
 
         // Afficher le titre
-        SDL_Rect titleRect = afficherTexte(ren, fontTitle, nom, 10, 20, color);
+        afficherTexte(ren, fontTitle, nom, 10, 20, color);
 
         // Afficher l'image
         //prochainement
 
         // Afficher la description
-        SDL_Rect descriptionRect = afficherTexte(ren, font, description, 300, 200, color);
+        afficherTexte(ren, font, description, 300, 200, color);
 
         // Afficher le bouton "Retour"
         SDL_Rect retourRect = afficherTexte(ren, font, "Retour", 500, 400, color);

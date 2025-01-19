@@ -1,101 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
-#include <string.h>
 
 //Mes propres librairies
 #include "grille.h"
-// // PROTOTYPE
-// Grille creationGrille(const char *input);
-// //void AfficherGrille(Grille grille);
-// void libererGrille(Grille* grille);
 
-// // Fonction pour créer la grille (la taille et la liste des pointeurs vers les futurs lignes de notre grille)
-// Grille creationGrille(const char *input){
-//     // Utilisation de la structure Grille
-//     Grille grille;
-
-    // Demande de la taille de la grille via un terminal
-    //printf("Choisissez la taille du tableau : \n- Y : ");
-    //scanf("%d",&grille.tailleX);
-    //printf("- Z : ");
-    //scanf("%d",&grille.tailleY);
-
-    // lecture de "input" pour la taille de la grille
-    // Variable pour sauvegarde la valeur de input
-//     char inputSauv[100];
-//     strcpy(inputSauv, input);
-//     char *token = strtok(input, "x"); // On découpe la chaine de caractère avec un espace
-//     grille.tailleX = atoi(token); // On convertit le premier élément en int
-//     token = strtok(NULL, " "); // On passe au prochain élément
-//     grille.tailleY = atoi(token); // On convertit le deuxième élément en int
-//     printf("Taille du tableau : %d x %d\n", grille.tailleX, grille.tailleY);
-//     // réassignation de la bonna valeur à la variable input
-//     strcpy(input, inputSauv);
-
-
-//     // Allocation de la mémoire pour la liste de pointeurs
-//     grille.listePointeursLignes = (int**)malloc(grille.tailleX * sizeof(int*));
-    
-//     // Vérification de la bonne allocation de la mémoire
-//     if (grille.listePointeursLignes == NULL) {
-//         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
-//         exit(EXIT_FAILURE);
-//     }
-
-//     // Remplissage de la grille avec des 0
-//     for (int i = 0; i < grille.tailleX; i++){
-//         grille.listePointeursLignes[i] = (int*)malloc(grille.tailleY * sizeof(int));
-//         if (grille.listePointeursLignes[i] == NULL) {
-//             fprintf(stderr, "Erreur d'allocation de mémoire pour la ligne %d\n", i);
-//             exit(EXIT_FAILURE);
-//         }
-//         for (int j = 0; j < grille.tailleY; j++){
-//             grille.listePointeursLignes[i][j] = 0;
-//         }
-//     }
-
-
-//     return grille;
-// }
-
-//Fonction pour afficher la grille
-//void AfficherGrille(Grille grille){
-//    printf("Début du tableau\n");
-//    for (int i = 0; i < grille.tailleX; i++){
-//        for (int j = 0; j < grille.tailleY; j++){
-//            printf("| %d ", grille.listePointeursLignes[i][j]);
-//        }
-//        printf("|\n");
-//        for (int j = 0; j < grille.tailleY; j++){
-//            printf("----");
-//        }
-//        printf("-\n");
-//    }
-//    printf("Fin du tableau\n\n");
-//}
-
-
-// Fonction pour libérer la mémoire de la grille
-//void libererGrille(Grille* grille) {
-    //if (!grille || !grille->listePointeursLignes) {
-        //return;
-    //}
-    //for (int i = 0; i < grille->tailleX; i++) {
-        //if (grille->listePointeursLignes[i] != NULL) {
-            //free(grille->listePointeursLignes[i]);
-            //grille->listePointeursLignes[i] = NULL;
-            //printf("Mémoire libérée pour la ligne %d\n", i);
-        //}
-    //}
-    //free(grille->listePointeursLignes);
-    //grille->listePointeursLignes = NULL;
-    //printf("Mémoire libérée pour la liste des pointeurs vers les lignes\n");
-//}
-
-
-
-// NOUVELLE STRUCT EN DOUBLE CHAINEE
+// Création de la grille
 GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
     // Test de la nouvelle structure de grille
     //printf("Création d'une nouvelle grille\n");
@@ -149,10 +58,9 @@ GrilleChaine* creerGrilleChaine(int largeur, int hauteur){
     return grilleChaine;
 }
 
-
+// Ajout d'une grille
 void ajoutGrilleChaine(GrilleChaine *grille) {
     //printf("Tentative Nouvelle grille");
-    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grille || !grille->dernier) {
         fprintf(stderr, "La grille transferer est vide\n");
         return;
@@ -197,8 +105,8 @@ void ajoutGrilleChaine(GrilleChaine *grille) {
     //printf("Nouvelle grille ajoutée à la chaîne\n");
 }
 
+// Suppression de toutes les grilles de la chaine
 void libererGrilleChaine(GrilleChaine *grillechaine) {
-    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grillechaine) {
         return;
     }
@@ -226,28 +134,9 @@ void libererGrilleChaine(GrilleChaine *grillechaine) {
     printf("Mémoire libérée pour toutes les grilles de la chaîne\n");
 }
 
-// // Fonction pour libérer la mémoire de la grille
-// void libererGrilleChaine(GrilleChaine *grilleChaine) {
-//     if (grilleChaine == NULL) return;
-
-//     Grille *grille = grilleChaine->dernier;
-//     while (grille != NULL) {
-//         for (int i = 0; i < grille->tailleY; i++) {
-//             free(grille->listePointeursLignes[i]);
-//         }
-//         free(grille->listePointeursLignes);
-//         Grille *precedent = grille->precedent;
-//         free(grille);
-//         grille = precedent;
-//     }
-//     free(grilleChaine);
-// }
-
-
-
+// Afficher la grille dans le terminal
 void afficherGrilleChaine(GrilleChaine *grilleChaine) {
     //printf("Affichage grille");
-    setlocale(LC_ALL, "fr_FR.UTF-8");
     if (!grilleChaine || !grilleChaine->premier) {
         printf("La chaîne de grilles est vide.\n");
         return;
@@ -271,5 +160,46 @@ void afficherGrilleChaine(GrilleChaine *grilleChaine) {
         printf("Fin de la grille %d\n\n", grilleIndex);
         current = current->suivant;
         grilleIndex++;
+    }
+}
+
+// Calcul de la prochaine grille
+void vérifierCaseVivante(GrilleChaine* grille){
+
+    // Création de la nouvelle grille
+    ajoutGrilleChaine(grille);
+    //afficherGrilleChaine(grille);
+
+    if (grille->dernier->precedent != NULL) {
+        for (int i = 0; i < grille->dernier->precedent->tailleY; i++){
+            for (int j = 0; j < grille->dernier->precedent->tailleX; j++){
+
+                // Permet de connaitre le nombre de case vivante autour de nous
+                int nbVoisins = 0;
+
+                // Vérification des cases autours en passant pas la dernière grille puis la precedente ce qui nous mène à la dernière grille calculé
+                for (int k = i-1; k <= i+1; k++){
+                    for (int l = j-1; l <= j+1; l++){
+                        if (k >= 0 && k < grille->dernier->precedent->tailleY && l >= 0 && l < grille->dernier->precedent->tailleX){
+                            if (grille->dernier->precedent->listePointeursLignes[k][l] == 1){
+                                //printf("*La case X= %d, Y= %d est vivante\n", k, l);
+                                if (k != i || l != j){
+                                    nbVoisins++;
+                                    //printf("- +1 pour %d, %d\n", k,l);
+                                }
+                            }
+                        }
+                    }
+                }
+                // Appliquer les règles du jeu de la vie et stocker le résultat dans la nouvelle grille (donc la dernière)
+                if ((nbVoisins == 2 || nbVoisins == 3) && grille->dernier->precedent->listePointeursLignes[i][j] == 1){
+                    grille->dernier->listePointeursLignes[i][j] = 1;
+                } else if (nbVoisins == 3){
+                    grille->dernier->listePointeursLignes[i][j] = 1;
+                } else {
+                    grille->dernier->listePointeursLignes[i][j] = 0;
+                }
+            }
+        }
     }
 }

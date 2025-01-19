@@ -13,14 +13,14 @@
 
 // Mes propres fichiers
 #include "grille.h"
+//#include "sauvegarde.h"
 #include "sauvegarde.h"
-#include "sauvegarde.c"
 
 // PROTOTYPES
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille);
-SDL_Rect* afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color,const char *nom,int *caseX,int *caseY, int* mouseX, int* mouseY);
+void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, const char *nom,int *caseX,int *caseY, int* mouseX, int* mouseY);
 SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
-int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect);
+int pause(SDL_Renderer *ren, TTF_Font *fontTitle, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect);
 
 // Jeu
 int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom, GrilleChaine* grille){
@@ -133,7 +133,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         // Afficher la grille dans le rectangle
         int temp1 = 0;
         int temp2 = 0;
-        afficherGrilleJeu(grille, ren, font, color, nom, &caseX, &caseY, &temp1, &temp2);
+        afficherGrilleJeu(grille, ren, nom, &caseX, &caseY, &temp1, &temp2);
 
         // Condition pour ne pas avancer de tour si l'option "SandBox a été choisie"
         if (strcmp(nom, "SandBox") != 0){
@@ -256,7 +256,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         }
 
         // Afficher le texte "Quitter" centré dans le rectangle
-        SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, color);
+        afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, color);
         quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
         quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
         quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
@@ -334,14 +334,14 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 else if (mouseX >= pauseRect.x && mouseX <= pauseRect.x + pauseRect.w &&
                     mouseY >= pauseRect.y && mouseY <= pauseRect.y + pauseRect.h) {
                     
-                    runningJeu = pause(ren, fontTitle, font, color, pauseRect, quitterRect);
+                    runningJeu = pause(ren, fontTitle, color, pauseRect, quitterRect);
                 }
 
                 // Clique dans la grille
                 else if (mouseX >= grilleRect.x && mouseX < grilleRect.x + grilleRect.w &&
                         mouseY >= grilleRect.y && mouseY < grilleRect.y + grilleRect.h) {
                     //printf("Un clique dans la grille\n");
-                    afficherGrilleJeu(grille, ren, font, color, nom, &caseX, &caseY, &mouseX, &mouseY);
+                    afficherGrilleJeu(grille, ren, nom, &caseX, &caseY, &mouseX, &mouseY);
                 }
             }
         }
@@ -369,7 +369,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
 }
 
 // Fonction pour afficher la grille dans le jeu
-SDL_Rect* afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *font, SDL_Color color,const char *nom, int *caseX, int *caseY, int* mouseX, int* mouseY){
+void afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren,const char *nom, int *caseX, int *caseY, int* mouseX, int* mouseY){
     // Vérification de la bonne allocution de la mémoire
     if (grille->dernier->listePointeursLignes == NULL) {
         fprintf(stderr, "Erreur d'allocation de mémoire pour la liste des pointeurs vers les lignes\n");
@@ -418,13 +418,11 @@ SDL_Rect* afficherGrilleJeu(GrilleChaine* grille, SDL_Renderer *ren, TTF_Font *f
             }
         }
     }
-
-    return &grilleRect;
 }
 
 
 // Fonction qui affiche la pause
-int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect){
+int pause(SDL_Renderer *ren, TTF_Font *fontTitle, SDL_Color color, SDL_Rect pauseRect ,SDL_Rect quitterRect){
     int paused = 1;
     int runningJeu = 1;
 
@@ -439,7 +437,7 @@ int pause(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color colo
         //SDL_RenderClear(ren);
 
         // Afficher en grand le message de pause
-        SDL_Rect pauseMessageRect = afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
+        afficherTexte(ren, fontTitle, "PAUSE", largeurEcran / 2 - 50, hauteurEcran / 2 - 50, color);
 
         // Appliquer les modifications
         SDL_RenderPresent(ren);

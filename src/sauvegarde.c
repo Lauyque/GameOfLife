@@ -23,7 +23,7 @@ void sauvegarderGrilleChaine(GrilleChaine *grilleChaine, const char *nomFichier)
         return;
     }
 
-    fprintf(fichier, "%lu\n", grilleChaine->taille);
+    fprintf(fichier, "%llu\n", grilleChaine->taille);
 
     Grille *actuelle = grilleChaine->premier;
     while (actuelle != NULL) {
@@ -56,7 +56,7 @@ GrilleChaine* chargerGrilleChaine(const char *nomFichier) {
     }
 
     size_t taille;
-    fscanf(fichier, "%lu", &taille);
+    fscanf(fichier, "%llu", &taille);
     if (taille == 0){
         perror("Pas de taille dans le fichier");
         return NULL;

@@ -4,13 +4,23 @@
 #include <string.h>
 #include <time.h>
 
+// SDL
+#define SDL_MAIN_HANDLED
+#include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
+#include <SDL_mixer.h>
+
 //Mes propres fichiers
 //#include "grille.c"
 //#include "caseVie.c"
-#include "menu.c"
+#include "menu.h"
 
 
 int main(){
+
+    // Rediriger les erreurs vers un fichier
+    freopen("error_main_log.txt", "w", stderr);
     // Définition de utf-8 pour les accents
     setlocale(LC_ALL, "fr_FR.UTF-8");
 

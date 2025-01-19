@@ -10,13 +10,17 @@
 #include <SDL_image.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 #include <SDL_mixer.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
 
-GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
-void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
+//Mes propres librairies
+#include "grille.h"
+#include "choixGrille.h"
 
-SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
+//GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom);
+//void lectureTextInput(SDL_Renderer *ren, TTF_Font *font, SDL_Color color, SDL_Rect inputRect, char *inputText, int maxLength);
+
+//SDL_Rect afficherTexte(SDL_Renderer *ren, TTF_Font *font, const char *texte, int posX, int posY, SDL_Color color);
 
 // Fonction qui affiche le choix de la taille de la grille
-GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, const char *nom) {
+GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color) {
     int runningChoixGrille = 1;
     char inputText[100] = "";
 
@@ -64,7 +68,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
         int titleTextX = titleRect.x + (titleRect.w - titleTextWidth) / 2;
         int titleTextY = titleRect.y + (titleRect.h - titleTextHeight) / 2;
         // Afficher le texte du titre centré
-        titleTextRect = afficherTexte(ren, fontTitle, "Choisissez la taille de votre grille", titleTextX, titleTextY, color);
+        afficherTexte(ren, fontTitle, "Choisissez la taille de votre grille", titleTextX, titleTextY, color);
 
         // Zone de saisie de texte
         SDL_Rect saisieRect = {(largeurEcran /2) - 250, 250, 500, 30};
@@ -97,12 +101,12 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
         SDL_RenderFillRect(ren, &bouton5Rect);
         SDL_RenderFillRect(ren, &bouton6Rect);
         // Afficher les textes
-        bouton1TextRect = afficherTexte(ren, font, "10*10", bouton1Rect.x + ((bouton1Rect.w/2)-bouton1TextRect.w/2), bouton1Rect.y + ((bouton1Rect.h/2)-(bouton1TextRect.h/2)), color);
-        bouton2TextRect = afficherTexte(ren, font, "20*20", bouton2Rect.x + ((bouton2Rect.w/2)-bouton2TextRect.w/2), bouton2Rect.y + ((bouton2Rect.h/2)-(bouton2TextRect.h/2)), color);
-        bouton3TextRect = afficherTexte(ren, font, "25*25", bouton3Rect.x + ((bouton3Rect.w/2)-bouton3TextRect.w/2), bouton3Rect.y + ((bouton3Rect.h/2)-(bouton3TextRect.h/2)), color);
-        bouton4TextRect = afficherTexte(ren, font, "80*40", bouton4Rect.x + ((bouton4Rect.w/2)-bouton4TextRect.w/2), bouton4Rect.y + ((bouton4Rect.h/2)-(bouton4TextRect.h/2)), color);
-        bouton5TextRect = afficherTexte(ren, font, "15*15", bouton5Rect.x + ((bouton5Rect.w/2)-bouton5TextRect.w/2), bouton5Rect.y + ((bouton5Rect.h/2)-(bouton5TextRect.h/2)), color);
-        bouton6TextRect = afficherTexte(ren, font, "50*50", bouton6Rect.x + ((bouton6Rect.w/2)-bouton6TextRect.w/2), bouton6Rect.y + ((bouton6Rect.h/2)-(bouton6TextRect.h/2)), color);
+        afficherTexte(ren, font, "10*10", bouton1Rect.x + ((bouton1Rect.w/2)-bouton1TextRect.w/2), bouton1Rect.y + ((bouton1Rect.h/2)-(bouton1TextRect.h/2)), color);
+        afficherTexte(ren, font, "20*20", bouton2Rect.x + ((bouton2Rect.w/2)-bouton2TextRect.w/2), bouton2Rect.y + ((bouton2Rect.h/2)-(bouton2TextRect.h/2)), color);
+        afficherTexte(ren, font, "25*25", bouton3Rect.x + ((bouton3Rect.w/2)-bouton3TextRect.w/2), bouton3Rect.y + ((bouton3Rect.h/2)-(bouton3TextRect.h/2)), color);
+        afficherTexte(ren, font, "80*40", bouton4Rect.x + ((bouton4Rect.w/2)-bouton4TextRect.w/2), bouton4Rect.y + ((bouton4Rect.h/2)-(bouton4TextRect.h/2)), color);
+        afficherTexte(ren, font, "15*15", bouton5Rect.x + ((bouton5Rect.w/2)-bouton5TextRect.w/2), bouton5Rect.y + ((bouton5Rect.h/2)-(bouton5TextRect.h/2)), color);
+        afficherTexte(ren, font, "50*50", bouton6Rect.x + ((bouton6Rect.w/2)-bouton6TextRect.w/2), bouton6Rect.y + ((bouton6Rect.h/2)-(bouton6TextRect.h/2)), color);
 
         // Afficher le bouton "Jouer"
         SDL_Rect jouerTextRect = afficherTexte(ren, font, "Jouer", (largeurEcran /2) - 200, 550, color);
@@ -146,7 +150,7 @@ GrilleChaine* lancementChoixGrille(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_F
         }
 
         // Afficher le texte "Quitter" centré dans le rectangle
-        SDL_Rect quitterTextRect = afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, color);
+        afficherTexte(ren, font, "Quitter", quitterRect.x + (quitterRect.w / 2) - 26, quitterRect.y + (quitterRect.h / 2) - 10, color);
         quitterRect.w += 20; // Permet d'agrandir la zone de clic en largeur
         quitterRect.h += 10; // Permet d'agrandir la zone de clic en hauteur
         quitterRect.x -= 10; // Permet de commencer la zone de clic plus à gauche
