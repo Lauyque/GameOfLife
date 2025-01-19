@@ -1,0 +1,2 @@
+Mix_LoadMUS Error: Couldn't open '../assets/musics/Music1.mp3'
+Erreur lors du lancement du menu

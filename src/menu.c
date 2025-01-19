@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 #include <windows.h>
 
@@ -17,6 +18,8 @@
 #include "sauvegarde.h"
 #include "choixGrille.h"
 #include "jeu.h"
+
+char *url_decode(const char *str);
 
 // Fonction qui affiche le menu
 int lancementMenu()
@@ -88,18 +91,18 @@ int lancementMenu()
 
     // Nom des options
     const char *nomOptions[6] = {
-        "Glider",
-        "2",
-        "3",
+        "Planeur",
+        "LWSS",
+        "Le Gosper Gun",
         "Aléatoire",
         "SandBox",
         "Personnalisé"};
 
     // Description des options
     const char *descriptionOptions[6] = {
-        "Le 'Glider' est le nom donner pour le plus petit model de cases de vie qui avance à l'infini",
-        "coucou2",
-        "coucou3",
+        "Le 'Planeur' est le nom donner pour le plus petit model de cases de vie qui avance à l'infini",
+        "Vaisseau qui avance horizontalement et reprend sa forme principal tous les 4 tours",
+        "Voici le premier représentant connu de canon lance-glisseurs.Remarquablement simple, il ne comporte initialement que 36 cellules. À la 15ème génération, il émet un glisseur qui s'éloigne vers le bas et la droite. Les glisseurs suivants sont émis toutes les 30 générations, ce qui correspond à la période de la partie principale (le 'canon').",
         "Permet de commencer avec une grille aléatoire",
         "Permet de créer sa propre grille",
         "Permet d'importer un fichier personnalisé"
@@ -108,7 +111,7 @@ int lancementMenu()
     // Chemins des images
     const char *imagePaths[6] = {
         "../assets/images/Glider.bmp",
-        "../assets/images/Glider.bmp",
+        "../assets/images/LWSS.bmp",
         "../assets/images/Glider.bmp",
         "../assets/images/Aleatoire.bmp",
         "../assets/images/Sandbox.bmp",
@@ -341,15 +344,21 @@ int lancementMenu()
                     {
                         //printf("Lancer pour l'option %s\n", nomOptions[row * 3 + col]);
                         // Si le choix est personnalisé, pas besoin de choisir une grille
-                        if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0)
+                        if (strcmp(nomOptions[row * 3 + col], "Personnalisé") == 0 || strcmp(nomOptions[row * 3 + col], "Le Gosper Gun") == 0)
                         {
                             //GrilleChaine* chargerGrilleChaine(*nomFichier);
 
                             // Minimiser la fenêtre SDL
                             SDL_MinimizeWindow(menu);
-
-                            // Utiliser la fonction pour obtenir le chemin du fichier sélectionné
-                            char* nomFichier = ouvrirExplorateurFichiers();
+                            char* nomFichier;
+                            if (strcmp(nomOptions[row * 3 + col], "Le Gosper Gun") == 0) {
+                                const char* encodedFichier = "C:/Users/loic/OneDrive%20-%20EDUGIECCIP/03%20-%20INGE/Programmation%20Avancee/GameOfLife/save/exemples/le_gosper_gun.txt";
+                                nomFichier = url_decode(encodedFichier);
+                            } else {
+                                // Utiliser la fonction pour obtenir le chemin du fichier sélectionné
+                                nomFichier = ouvrirExplorateurFichiers();
+                            }
+                            printf("Chemin du fichier : %s", nomFichier);
 
                             // Restaurer la fenêtre SDL
                             SDL_RestoreWindow(menu);
@@ -414,11 +423,24 @@ int lancementMenu()
                                 } else if (strcmp(nomOptions[row * 3 + col], nomOptions[4]) == 0) { // Lancement du sandbox
                                     //void lancementSandBox(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Color color, Grille *grille); // A faire si on a le temps
                                 } else if (grille->dernier->tailleX > 3 && grille->dernier->tailleY > 3) {
-                                    grille->dernier->listePointeursLignes[2][1] = 1;
-                                    grille->dernier->listePointeursLignes[3][2] = 1;
-                                    grille->dernier->listePointeursLignes[1][3] = 1;
-                                    grille->dernier->listePointeursLignes[2][3] = 1;
-                                    grille->dernier->listePointeursLignes[3][3] = 1;
+                                    if (strcmp(nomOptions[row * 3 + col], "Planeur") == 0) {
+                                        grille->dernier->listePointeursLignes[2][1] = 1;
+                                        grille->dernier->listePointeursLignes[3][2] = 1;
+                                        grille->dernier->listePointeursLignes[1][3] = 1;
+                                        grille->dernier->listePointeursLignes[2][3] = 1;
+                                        grille->dernier->listePointeursLignes[3][3] = 1;
+                                    } else if (strcmp(nomOptions[row * 3 + col], "LWSS") == 0) {
+                                        grille->dernier->listePointeursLignes[0][0] = 1;
+                                        grille->dernier->listePointeursLignes[0][3] = 1;
+                                        grille->dernier->listePointeursLignes[1][4] = 1;
+                                        grille->dernier->listePointeursLignes[2][0] = 1;
+                                        grille->dernier->listePointeursLignes[2][4] = 1;
+
+                                        grille->dernier->listePointeursLignes[3][1] = 1;
+                                        grille->dernier->listePointeursLignes[3][2] = 1;
+                                        grille->dernier->listePointeursLignes[3][3] = 1;
+                                        grille->dernier->listePointeursLignes[3][4] = 1;
+                                    }
                                 } else {
                                     fprintf(stderr, "Erreur: taille de la grille insuffisante\n");
                                     runningMenu = 0;
@@ -621,4 +643,34 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
     }
     
     return 0;
+}
+
+// Function to decode a percent-encoded URL
+char *url_decode(const char *str) {
+    char *decoded = malloc(strlen(str) + 1); // Allocate memory for decoded string
+    char *p = decoded;
+
+    if (!decoded) {
+        return NULL; // Memory allocation failed
+    }
+
+    while (*str) {
+        if (*str == '%') {
+            // Decode %XX into a single character
+            int hex;
+            sscanf(str + 1, "%2x", &hex); // Read two hexadecimal digits
+            *p++ = (char)hex;
+            str += 3; // Skip past %XX
+        } else if (*str == '+') {
+            // Replace + with space (common in query strings)
+            *p++ = ' ';
+            str++;
+        } else {
+            // Copy regular characters
+            *p++ = *str++;
+        }
+    }
+    *p = '\0'; // Null-terminate the string
+
+    return decoded;
 }

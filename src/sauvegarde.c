@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <commdlg.h>
-//#include <unistd.h> // Pour access()
+#include <unistd.h> // Pour access()
 //#include <errno.h>  // Pour errno
 
 // Mes propes fichiers
@@ -15,7 +15,7 @@ void sauvegarderGrilleChaine(GrilleChaine *grilleChaine, const char *nomFichier)
 
     // Créer le chemin complet vers le dossier "save"
     char cheminComplet[MAX_PATH];
-    snprintf(cheminComplet, sizeof(cheminComplet), "save/%s", nomFichier);
+    snprintf(cheminComplet, sizeof(cheminComplet), "../save/%s", nomFichier);
 
     FILE *fichier = fopen(cheminComplet, "w");
     if (!fichier) {
@@ -43,11 +43,12 @@ void sauvegarderGrilleChaine(GrilleChaine *grilleChaine, const char *nomFichier)
 
 GrilleChaine* chargerGrilleChaine(const char *nomFichier) {
     // Vérification du chemin
-    // if (access(nomFichier, F_OK) == -1) {
-    //     // Le fichier n'existe pas
-    //     perror("Le fichier n'existe pas");
-    //     return NULL;
-    // }
+    if (access(nomFichier, F_OK) == -1) {
+        // Le fichier n'existe pas
+        printf("Le fichier n'existe pas : %s", nomFichier);
+        perror("Le fichier n'existe pas");
+        return NULL;
+    }
 
     FILE *fichier = fopen(nomFichier, "r");
     if (!fichier) {

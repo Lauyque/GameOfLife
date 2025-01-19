@@ -228,6 +228,12 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
         SDL_RenderDrawRect(ren, &pauseTextRect); // Dessiner le rectangle
 
+        // Bouton "Sauvegarder"
+        SDL_Rect saveRect = {menuDroiteRect.x, pauseRect.y -60, 100, 50}; // Position en haut à gauche
+        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+        SDL_RenderFillRect(ren, &saveRect);
+        afficherTexte(ren, font, "Sauvegarder", saveRect.x + 10, saveRect.y + 10, color);
+
 
         // Affichage du bouton quitter
         // Je le place ici pour que je puisse appeller son rect dans la boucle des events juste après
@@ -278,7 +284,8 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 int mouseY = e.button.y;
 
                 // Gestion du bouton "Sauvegarder"
-                if (mouseX >= 50 && mouseX <= 150 && mouseY >= 50 && mouseY <= 100) 
+                if (mouseX >= saveRect.x && mouseX <= saveRect.x + saveRect.w &&
+                    mouseY >= saveRect.y && mouseY <= saveRect.y + saveRect.h) 
                 {
                     sauvegarderGrilleChaine(grille, "sauvegarde.txt");
                 }
@@ -345,12 +352,6 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 }
             }
         }
-
-        // Bouton "Sauvegarder"
-        SDL_Rect saveRect = {50, 50, 100, 50}; // Position en haut à gauche
-        SDL_SetRenderDrawColor(ren, 0, 255, 0, 255);
-        SDL_RenderFillRect(ren, &saveRect);
-        afficherTexte(ren, font, "Sauvegarder", saveRect.x + 10, saveRect.y + 10, color);
 
         // Afficher le rendu
         SDL_RenderPresent(ren);
