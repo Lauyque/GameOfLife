@@ -306,9 +306,10 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
                 // Aller en arrière
                 else if (mouseX >= boutonRetourArriere.x && mouseX < boutonRetourArriere.x + boutonRetourArriere.w &&
                          mouseY >= boutonRetourArriere.y && mouseY < boutonRetourArriere.y + boutonRetourArriere.h) {
-
-                        grille->dernier = grille->dernier->precedent;
-                        tour--;
+                        if (grille->dernier != grille->premier) {
+                            grille->dernier = grille->dernier->precedent;
+                            tour--;
+                        }
                 }
                 // Aller en avant
                 else if (mouseX >= boutonAvancer.x && mouseX < boutonAvancer.x + boutonAvancer.w &&

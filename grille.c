@@ -211,7 +211,7 @@ void libererGrilleChaine(GrilleChaine *grillechaine) {
             if (grille->listePointeursLignes[i] != NULL) {
                 free(grille->listePointeursLignes[i]);
                 grille->listePointeursLignes[i] = NULL;
-                printf("Mémoire libérée pour la ligne %d\n", i);
+                //printf("Mémoire libérée pour la ligne %d\n", i);
             }
         }
         free(grille->listePointeursLignes);
