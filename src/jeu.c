@@ -42,7 +42,7 @@ int lancementJeu(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *font, SDL_Col
     }
 
     // Charger la musique
-    Mix_Music *music = Mix_LoadMUS("assets/musics/Music_Jeu.mp3");
+    Mix_Music *music = Mix_LoadMUS("../assets/musics/Music_Jeu.mp3");
     if (!music)
     {
         printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
