@@ -4,7 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include <windows.h>
+#include <windows.h> // uniquement sur windows
+#include <direct.h> // uniquement sur windows
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h> // Erreur normal puisqu'on rajoute le chemin vers la librairie SDL avec le makefile
@@ -352,8 +353,26 @@ int lancementMenu()
                             SDL_MinimizeWindow(menu);
                             char* nomFichier;
                             if (strcmp(nomOptions[row * 3 + col], "Le Gosper Gun") == 0) {
-                                const char* encodedFichier = "C:/Users/loic/OneDrive%20-%20EDUGIECCIP/03%20-%20INGE/Programmation%20Avancee/GameOfLife/save/exemples/le_gosper_gun.txt";
-                                nomFichier = url_decode(encodedFichier);
+                                char currentPath[FILENAME_MAX] = {0}; // Initialisation du buffer pour le chemin courant
+                                char absolutePath[FILENAME_MAX] = {0}; // Initialisation du buffer pour le chemin absolu
+                                const char *relativePath = "../save/exemples/le_gosper_gun.txt"; // chemin relatif
+
+                                // Obtenir le répertoire courant
+                                if (getcwd(currentPath, sizeof(currentPath)) != NULL) {
+                                    printf("Répertoire courant : %s\n", currentPath);
+                                } else {
+                                    fprintf(stderr, "Erreur lors de la récupération du répertoire courant");
+                                    exit(EXIT_FAILURE);
+                                }
+
+                                // Combiner le répertoire courant avec le chemin relatif
+                                if (_fullpath(absolutePath, relativePath, sizeof(absolutePath)) != NULL) {
+                                    nomFichier = strdup(absolutePath);
+                                    printf("Chemin absolu : %s\n", absolutePath);
+                                } else {
+                                    fprintf(stderr, "Erreur lors de la résolution du chemin relatif");
+                                    exit(EXIT_FAILURE);
+                                }
                             } else {
                                 // Utiliser la fonction pour obtenir le chemin du fichier sélectionné
                                 nomFichier = ouvrirExplorateurFichiers();
@@ -643,34 +662,4 @@ int lancementPlusInformation(SDL_Renderer *ren, TTF_Font *fontTitle, TTF_Font *f
     }
     
     return 0;
-}
-
-// Function to decode a percent-encoded URL
-char *url_decode(const char *str) {
-    char *decoded = malloc(strlen(str) + 1); // Allocate memory for decoded string
-    char *p = decoded;
-
-    if (!decoded) {
-        return NULL; // Memory allocation failed
-    }
-
-    while (*str) {
-        if (*str == '%') {
-            // Decode %XX into a single character
-            int hex;
-            sscanf(str + 1, "%2x", &hex); // Read two hexadecimal digits
-            *p++ = (char)hex;
-            str += 3; // Skip past %XX
-        } else if (*str == '+') {
-            // Replace + with space (common in query strings)
-            *p++ = ' ';
-            str++;
-        } else {
-            // Copy regular characters
-            *p++ = *str++;
-        }
-    }
-    *p = '\0'; // Null-terminate the string
-
-    return decoded;
 }
