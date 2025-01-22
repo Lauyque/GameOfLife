@@ -384,7 +384,7 @@ int lancementMenu()
                                     libererGrilleChaine(grille);
 
                                     // Relancer la musique
-                                    music = Mix_LoadMUS("assets/musics/Music1.mp3");
+                                    music = Mix_LoadMUS("../assets/musics/Music1.mp3");
                                     if (!music) {
                                         printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
                                     } else {
@@ -452,7 +452,7 @@ int lancementMenu()
                                 }
                                 //libererGrilleChaine(grille);
                                 // Relancer la musique
-                                music = Mix_LoadMUS("assets/musics/Music1.mp3");
+                                music = Mix_LoadMUS("../assets/musics/Music1.mp3");
                                 if (!music) {
                                     printf("Mix_LoadMUS Error: %s\n", Mix_GetError());
                                 } else {
